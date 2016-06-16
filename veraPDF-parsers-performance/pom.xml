@@ -32,12 +32,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.verapdf</groupId>
-            <artifactId>gui</artifactId>
-            <version>[0.17.0,0.18.0)</version>
-        </dependency>
-
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
