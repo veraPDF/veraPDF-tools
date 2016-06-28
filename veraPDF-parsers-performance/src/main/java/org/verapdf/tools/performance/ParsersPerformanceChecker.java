@@ -2,13 +2,10 @@ package org.verapdf.tools.performance;
 
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
-import org.verapdf.features.pb.PBFeatureParser;
 import org.verapdf.features.tools.FeaturesCollection;
-import org.verapdf.metadata.fixer.impl.MetadataFixerImpl;
-import org.verapdf.metadata.fixer.impl.fixer.PBoxMetadataFixerImpl;
 import org.verapdf.pdfa.MetadataFixer;
 import org.verapdf.pdfa.PDFAValidator;
-import org.verapdf.pdfa.ValidationModelParser;
+import org.verapdf.pdfa.PDFParser;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.results.MetadataFixerResult;
 import org.verapdf.pdfa.results.ValidationResult;
@@ -48,7 +45,7 @@ public class ParsersPerformanceChecker {
 
         for (ModelParserType type : ModelParserType.values()) {
             InputStream is = new FileInputStream(temp);
-            ValidationModelParser parser = ModelParserFactory.createModelParser(type, is, pdfaFlavour);
+            PDFParser parser = ModelParserFactory.createModelParser(type, is, pdfaFlavour);
             ModelParserResults modelParserResults = new ModelParserResults(parser, temp);
             checker.parsers.put(type, modelParserResults);
         }
@@ -180,7 +177,7 @@ public class ParsersPerformanceChecker {
 
     private void validate(ModelParserType type) throws ValidationException, ModelParsingException {
         ModelParserResults res = this.parsers.get(type);
-        ValidationModelParser parser = res.getParser();
+        PDFParser parser = res.getParser();
         PDFAValidator validator = Validators.createValidator(this.profile, true);
         long startTime = System.currentTimeMillis();
         ValidationResult result = validator.validate(parser);
@@ -207,11 +204,16 @@ public class ParsersPerformanceChecker {
     }
 
     private void collectFeatures(ModelParserType type) {
-        // TODO: implement me
+        ModelParserResults res = this.parsers.get(type);
+        PDFParser parser = res.getParser();
+        long startTime = System.currentTimeMillis();
+        FeaturesCollection result = parser.getFeatures();
+        long endTime = System.currentTimeMillis();
+        res.setFeaturesCollection(result, endTime - startTime);
     }
 
     private static class ModelParserResults {
-        private ValidationModelParser parser;
+        private PDFParser parser;
         private File temp;
         private ValidationResult validationResult = null;
         private long validationTime = 0;
@@ -220,7 +222,7 @@ public class ParsersPerformanceChecker {
         private FeaturesCollection featuresCollection = null;
         private long featuresCollectionTime = 0;
 
-        public ModelParserResults(ValidationModelParser parser, File temp) {
+        public ModelParserResults(PDFParser parser, File temp) {
             if (parser == null) {
                 throw new IllegalArgumentException("ModelParser can't be null");
             }
@@ -231,7 +233,7 @@ public class ParsersPerformanceChecker {
             this.temp = temp;
         }
 
-        public ValidationModelParser getParser() {
+        public PDFParser getParser() {
             return parser;
         }
 

@@ -1,7 +1,7 @@
 package org.verapdf.tools.factory;
 
 import org.verapdf.core.ModelParsingException;
-import org.verapdf.pdfa.ValidationModelParser;
+import org.verapdf.pdfa.PDFParser;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.tools.performance.ModelParserType;
 
@@ -15,16 +15,16 @@ public class ModelParserFactory {
     private ModelParserFactory() {
     }
 
-    public static ValidationModelParser createPDFBoxModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
+    public static PDFParser createPDFBoxModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
         return org.verapdf.model.ModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
-    public static ValidationModelParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) {
+    public static PDFParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) {
         // TODO: implement me
         return null;
     }
 
-    public static ValidationModelParser createModelParser(ModelParserType type, InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
+    public static PDFParser createModelParser(ModelParserType type, InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
         switch (type) {
             case PDFBOX:
                 return createPDFBoxModelParser(toLoad, flavour);
