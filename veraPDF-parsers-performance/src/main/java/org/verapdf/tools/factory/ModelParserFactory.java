@@ -19,9 +19,8 @@ public class ModelParserFactory {
         return org.verapdf.model.ModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
-    public static PDFParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) {
-        // TODO: implement me
-        return null;
+    public static PDFParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
+        return org.verapdf.model.GFModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
     public static PDFParser createModelParser(ModelParserType type, InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {

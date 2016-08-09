@@ -2,6 +2,7 @@ package org.verapdf.tools.performance;
 
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
+import org.verapdf.features.config.FeaturesConfig;
 import org.verapdf.features.tools.FeaturesCollection;
 import org.verapdf.pdfa.MetadataFixer;
 import org.verapdf.pdfa.PDFAValidator;
@@ -23,6 +24,31 @@ import java.util.Map;
  * @author Maksim Bezrukov
  */
 public class ParsersPerformanceChecker {
+
+    private static FeaturesConfig featuresConfig;
+
+    static {
+        FeaturesConfig.Builder configBuilder = new FeaturesConfig.Builder();
+        configBuilder.informationDict(true);
+        configBuilder.metadata(true);
+        configBuilder.documentSecurity(true);
+        configBuilder.signatures(true);
+        configBuilder.lowLevelInfo(true);
+        configBuilder.embeddedFiles(true);
+        configBuilder.iccProfiles(true);
+        configBuilder.outputIntents(true);
+        configBuilder.outlines(true);
+        configBuilder.annotations(true);
+        configBuilder.pages(true);
+        configBuilder.graphicsStates(true);
+        configBuilder.colorSpaces(true);
+        configBuilder.patterns(true);
+        configBuilder.shadings(true);
+        configBuilder.xobjects(true);
+        configBuilder.fonts(true);
+        configBuilder.propertiesDicts(true);
+        featuresConfig = configBuilder.build();
+    }
 
     private Map<ModelParserType, ModelParserResults> parsers = new EnumMap<ModelParserType, ModelParserResults>(ModelParserType.class);
     private ValidationProfile profile = null;
@@ -66,6 +92,7 @@ public class ParsersPerformanceChecker {
 
     public boolean doesValidationResultsEquals() throws ValidationException, ModelParsingException {
         boolean res = true;
+        boolean isFirstNotNull = true;
         ValidationResult validationResult = null;
 
         for (Map.Entry<ModelParserType, ModelParserResults> entry : this.parsers.entrySet()) {
@@ -75,35 +102,43 @@ public class ParsersPerformanceChecker {
 
             if (validationResult == null) {
                 validationResult = entry.getValue().getValidationResult();
+                if (validationResult == null) {
+                    isFirstNotNull = false;
+                }
             } else {
                 res &= validationResult.equals(entry.getValue().getValidationResult());
             }
         }
 
-        return res;
+        return res && (validationResult == null || isFirstNotNull);
     }
 
-    public boolean doesMetadataFixerResultsEquals() throws ModelParsingException, IOException, ValidationException {
-        boolean res = true;
-        MetadataFixerResult metadataFixerResult = null;
-
-        for (Map.Entry<ModelParserType, ModelParserResults> entry : this.parsers.entrySet()) {
-            if (entry.getValue().getMetadataFixerResult() == null) {
-                fixMetadata(entry.getKey());
-            }
-
-            if (metadataFixerResult == null) {
-                metadataFixerResult = entry.getValue().getMetadataFixerResult();
-            } else {
-                res &= metadataFixerResult.equals(entry.getValue().getMetadataFixerResult());
-            }
-        }
-
-        return res;
-    }
+//    public boolean doesMetadataFixerResultsEquals() throws ModelParsingException, IOException, ValidationException {
+//        boolean res = true;
+//        boolean isFirstNotNull = true;
+//        MetadataFixerResult metadataFixerResult = null;
+//
+//        for (Map.Entry<ModelParserType, ModelParserResults> entry : this.parsers.entrySet()) {
+//            if (entry.getValue().getMetadataFixerResult() == null) {
+//                fixMetadata(entry.getKey());
+//            }
+//
+//            if (metadataFixerResult == null) {
+//                metadataFixerResult = entry.getValue().getMetadataFixerResult();
+//                if (metadataFixerResult == null) {
+//                    isFirstNotNull = false;
+//                }
+//            } else {
+//                res &= metadataFixerResult.equals(entry.getValue().getMetadataFixerResult());
+//            }
+//        }
+//
+//        return res && (metadataFixerResult == null || isFirstNotNull);
+//    }
 
     public boolean doesFeaturesCollectionsEquals() {
         boolean res = true;
+        boolean isFirstNotNull = true;
         FeaturesCollection featuresCollection = null;
 
         for (Map.Entry<ModelParserType, ModelParserResults> entry : this.parsers.entrySet()) {
@@ -113,12 +148,15 @@ public class ParsersPerformanceChecker {
 
             if (featuresCollection == null) {
                 featuresCollection = entry.getValue().getFeaturesCollection();
+                if (featuresCollection == null) {
+                    isFirstNotNull = false;
+                }
             } else {
                 res &= featuresCollection.equals(entry.getValue().getFeaturesCollection());
             }
         }
 
-        return res;
+        return res && (featuresCollection == null || isFirstNotNull);
     }
 
     public long getTimeOfValidation(ModelParserType type) throws ValidationException, ModelParsingException {
@@ -130,14 +168,14 @@ public class ParsersPerformanceChecker {
         return modelParserResults.getValidationTime();
     }
 
-    public long getTimeOfMetadataFixing(ModelParserType type) throws ModelParsingException, IOException, ValidationException {
-        ModelParserResults modelParserResults = parsers.get(type);
-        if (modelParserResults.getMetadataFixerResult() == null) {
-            fixMetadata(type);
-        }
-
-        return modelParserResults.getMetadataFixerTime();
-    }
+//    public long getTimeOfMetadataFixing(ModelParserType type) throws ModelParsingException, IOException, ValidationException {
+//        ModelParserResults modelParserResults = parsers.get(type);
+//        if (modelParserResults.getMetadataFixerResult() == null) {
+//            fixMetadata(type);
+//        }
+//
+//        return modelParserResults.getMetadataFixerTime();
+//    }
 
     public long getTimeOfFeaturesCollecting(ModelParserType type) {
         ModelParserResults modelParserResults = parsers.get(type);
@@ -157,14 +195,14 @@ public class ParsersPerformanceChecker {
         return modelParserResults.getValidationResult();
     }
 
-    public MetadataFixerResult getMetadataFixerResult(ModelParserType type) throws ModelParsingException, IOException, ValidationException {
-        ModelParserResults modelParserResults = parsers.get(type);
-        if (modelParserResults.getMetadataFixerResult() == null) {
-            fixMetadata(type);
-        }
-
-        return modelParserResults.getMetadataFixerResult();
-    }
+//    public MetadataFixerResult getMetadataFixerResult(ModelParserType type) throws ModelParsingException, IOException, ValidationException {
+//        ModelParserResults modelParserResults = parsers.get(type);
+//        if (modelParserResults.getMetadataFixerResult() == null) {
+//            fixMetadata(type);
+//        }
+//
+//        return modelParserResults.getMetadataFixerResult();
+//    }
 
     public FeaturesCollection getFeaturesCollection(ModelParserType type) {
         ModelParserResults modelParserResults = parsers.get(type);
@@ -185,29 +223,29 @@ public class ParsersPerformanceChecker {
         res.setValidationResult(result, endTime - startTime);
     }
 
-    private void fixMetadata(ModelParserType type) throws IOException, ValidationException, ModelParsingException {
-        ModelParserResults res = this.parsers.get(type);
-        if (res.getValidationResult() == null) {
-            validate(type);
-        }
-
-        InputStream is = new FileInputStream(res.getTemp());
-        File tempOut = File.createTempFile("tempOut", "");
-        tempOut.deleteOnExit();
-        FileOutputStream os = new FileOutputStream(tempOut);
-
-        MetadataFixer fixer = MetadataFixerFactory.createModelParser(type);
-        long startTime = System.currentTimeMillis();
-        MetadataFixerResult fixerResult = fixer.fixMetadata(is, os, res.getValidationResult());
-        long endTime = System.currentTimeMillis();
-        res.setMetadataFixerResult(fixerResult, endTime - startTime);
-    }
+//    private void fixMetadata(ModelParserType type) throws IOException, ValidationException, ModelParsingException {
+//        ModelParserResults res = this.parsers.get(type);
+//        if (res.getValidationResult() == null) {
+//            validate(type);
+//        }
+//
+//        InputStream is = new FileInputStream(res.getTemp());
+//        File tempOut = File.createTempFile("tempOut", "");
+//        tempOut.deleteOnExit();
+//        FileOutputStream os = new FileOutputStream(tempOut);
+//
+//        MetadataFixer fixer = MetadataFixerFactory.createModelParser(type);
+//        long startTime = System.currentTimeMillis();
+//        MetadataFixerResult fixerResult = fixer.fixMetadata(is, os, res.getValidationResult());
+//        long endTime = System.currentTimeMillis();
+//        res.setMetadataFixerResult(fixerResult, endTime - startTime);
+//    }
 
     private void collectFeatures(ModelParserType type) {
         ModelParserResults res = this.parsers.get(type);
         PDFParser parser = res.getParser();
         long startTime = System.currentTimeMillis();
-        FeaturesCollection result = parser.getFeatures();
+        FeaturesCollection result = parser.getFeatures(featuresConfig);
         long endTime = System.currentTimeMillis();
         res.setFeaturesCollection(result, endTime - startTime);
     }
