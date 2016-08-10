@@ -122,19 +122,19 @@ final class CliProcessor {
 			}
 		}
 
-		if (args.extractFeatures()) {
-			showResults("Features Extraction",
-					checker.doesFeaturesCollectionsEquals(),
-					checker.getTimeOfFeaturesCollecting(ModelParserType.PDFBOX),
-					checker.getTimeOfFeaturesCollecting(ModelParserType.GREENFIELD));
-		}
-
 //		if (args.fixMetadata()) {
 //			showResults("Metadata Fixer",
 //					checker.doesMetadataFixerResultsEquals(),
 //					checker.getTimeOfMetadataFixing(ModelParserType.PDFBOX),
 //					checker.getTimeOfMetadataFixing(ModelParserType.GREENFIELD));
 //		}
+
+		if (args.extractFeatures()) {
+			showResults("Features Extraction",
+					checker.doesFeaturesCollectionsEquals(),
+					checker.getTimeOfFeaturesCollecting(ModelParserType.PDFBOX),
+					checker.getTimeOfFeaturesCollecting(ModelParserType.GREENFIELD));
+		}
 	}
 
 	private boolean isValidation() {
