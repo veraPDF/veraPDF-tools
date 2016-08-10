@@ -52,23 +52,39 @@ public class ParsersPerformanceChecker {
 
     private Map<ModelParserType, ModelParserResults> parsers = new EnumMap<ModelParserType, ModelParserResults>(ModelParserType.class);
     private ValidationProfile profile = null;
+    private boolean logPassed = true;
+    private int maxFail = -1;
 
     private ParsersPerformanceChecker(){
     }
 
-    public static ParsersPerformanceChecker createCheckerWithProfile(InputStream toLoad, ValidationProfile profile) throws IOException, ModelParsingException {
+    public static ParsersPerformanceChecker createCheckerWithProfile(InputStream toLoad, ValidationProfile profile, boolean logPassed, int maxFail) throws IOException, ModelParsingException {
+        return createCheckerWithProfileAndFlavour(toLoad, profile, PDFAFlavour.NO_FLAVOUR, logPassed, maxFail);
+    }
+
+    public static ParsersPerformanceChecker createCheckerWithFlavour(InputStream toLoad, PDFAFlavour flavour, boolean logPassed, int maxFail) throws IOException, ModelParsingException {
+        return createCheckerWithProfileAndFlavour(toLoad, null, flavour, logPassed, maxFail);
+    }
+
+    private static ParsersPerformanceChecker createCheckerWithProfileAndFlavour(InputStream toLoad,
+                                                                                ValidationProfile profile,
+                                                                                PDFAFlavour flavour,
+                                                                                boolean logPassed,
+                                                                                int maxFail)
+            throws IOException, ModelParsingException {
         if (toLoad == null) {
             throw new IllegalArgumentException("Can not create Parsers Performance Checker without input stream of a file");
         }
-        if (profile == null) {
-            throw new IllegalArgumentException("Cannot create Parsers Performance Checker without validation profile");
+        if (profile == null && flavour == null) {
+            throw new IllegalArgumentException("Cannot create Parsers Performance Checker without both validation profile and flavour");
         }
         ParsersPerformanceChecker checker = new ParsersPerformanceChecker();
         checker.profile = profile;
+        checker.logPassed = logPassed;
+        checker.maxFail = maxFail;
         File temp = generateTempFile(toLoad);
         temp.deleteOnExit();
-        PDFAFlavour pdfaFlavour = profile.getPDFAFlavour();
-
+        PDFAFlavour pdfaFlavour = checker.profile == null ? flavour : checker.profile.getPDFAFlavour();
         for (ModelParserType type : ModelParserType.values()) {
             InputStream is = new FileInputStream(temp);
             PDFParser parser = ModelParserFactory.createModelParser(type, is, pdfaFlavour);
@@ -216,7 +232,9 @@ public class ParsersPerformanceChecker {
     private void validate(ModelParserType type) throws ValidationException, ModelParsingException {
         ModelParserResults res = this.parsers.get(type);
         PDFParser parser = res.getParser();
-        PDFAValidator validator = Validators.createValidator(this.profile, true);
+        PDFAValidator validator = this.profile != null ?
+                Validators.createValidator(this.profile, this.logPassed, this.maxFail)
+                : Validators.createValidator(parser.getFlavour(), this.logPassed, this.maxFail);
         long startTime = System.currentTimeMillis();
         ValidationResult result = validator.validate(parser);
         long endTime = System.currentTimeMillis();
