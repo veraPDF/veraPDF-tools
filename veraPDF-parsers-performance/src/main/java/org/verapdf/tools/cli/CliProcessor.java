@@ -138,7 +138,7 @@ final class CliProcessor {
 	}
 
 	private boolean isValidation() {
-		return args.getFlavour() == PDFAFlavour.NO_FLAVOUR && args.getProfileFile() == null;
+		return args.getFlavour() != PDFAFlavour.NO_FLAVOUR || args.getProfileFile() != null;
 	}
 
 	private void showResults(String processType, boolean isEquals, long pdfboxTime, long greenfieldTime) {
