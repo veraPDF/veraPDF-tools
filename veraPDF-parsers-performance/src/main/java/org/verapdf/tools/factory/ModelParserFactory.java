@@ -1,5 +1,6 @@
 package org.verapdf.tools.factory;
 
+import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.pdfa.PDFParser;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
@@ -15,15 +16,15 @@ public class ModelParserFactory {
     private ModelParserFactory() {
     }
 
-    public static PDFParser createPDFBoxModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
+    public static PDFParser createPDFBoxModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
         return org.verapdf.model.ModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
-    public static PDFParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
-        return org.verapdf.model.GFModelParser.createModelWithFlavour(toLoad, flavour);
+    public static PDFParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
+        return org.verapdf.gf.model.GFModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
-    public static PDFParser createModelParser(ModelParserType type, InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException {
+    public static PDFParser createModelParser(ModelParserType type, InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
         switch (type) {
             case PDFBOX:
                 return createPDFBoxModelParser(toLoad, flavour);

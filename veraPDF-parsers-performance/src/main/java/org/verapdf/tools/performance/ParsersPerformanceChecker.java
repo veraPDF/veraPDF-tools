@@ -1,5 +1,6 @@
 package org.verapdf.tools.performance;
 
+import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
 import org.verapdf.features.config.FeaturesConfig;
@@ -9,16 +10,18 @@ import org.verapdf.pdfa.PDFAValidator;
 import org.verapdf.pdfa.PDFParser;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.results.MetadataFixerResult;
+import org.verapdf.pdfa.results.TestAssertion;
 import org.verapdf.pdfa.results.ValidationResult;
+import org.verapdf.pdfa.validation.RuleId;
 import org.verapdf.pdfa.validation.ValidationProfile;
 import org.verapdf.pdfa.validators.Validators;
 import org.verapdf.tools.factory.MetadataFixerFactory;
 import org.verapdf.tools.factory.ModelParserFactory;
+import org.verapdf.tools.utils.TestAssertionContextFreeComparator;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Maksim Bezrukov
@@ -58,11 +61,11 @@ public class ParsersPerformanceChecker {
     private ParsersPerformanceChecker(){
     }
 
-    public static ParsersPerformanceChecker createCheckerWithProfile(InputStream toLoad, ValidationProfile profile, boolean logPassed, int maxFail) throws IOException, ModelParsingException {
+    public static ParsersPerformanceChecker createCheckerWithProfile(InputStream toLoad, ValidationProfile profile, boolean logPassed, int maxFail) throws IOException, ModelParsingException, EncryptedPdfException {
         return createCheckerWithProfileAndFlavour(toLoad, profile, PDFAFlavour.NO_FLAVOUR, logPassed, maxFail);
     }
 
-    public static ParsersPerformanceChecker createCheckerWithFlavour(InputStream toLoad, PDFAFlavour flavour, boolean logPassed, int maxFail) throws IOException, ModelParsingException {
+    public static ParsersPerformanceChecker createCheckerWithFlavour(InputStream toLoad, PDFAFlavour flavour, boolean logPassed, int maxFail) throws IOException, ModelParsingException, EncryptedPdfException {
         return createCheckerWithProfileAndFlavour(toLoad, null, flavour, logPassed, maxFail);
     }
 
@@ -71,7 +74,7 @@ public class ParsersPerformanceChecker {
                                                                                 PDFAFlavour flavour,
                                                                                 boolean logPassed,
                                                                                 int maxFail)
-            throws IOException, ModelParsingException {
+            throws IOException, ModelParsingException, EncryptedPdfException {
         if (toLoad == null) {
             throw new IllegalArgumentException("Can not create Parsers Performance Checker without input stream of a file");
         }
@@ -122,11 +125,40 @@ public class ParsersPerformanceChecker {
                     isFirstNotNull = false;
                 }
             } else {
-                res &= validationResult.equals(entry.getValue().getValidationResult());
+                res &= validationResultsEquals(validationResult, entry.getValue().getValidationResult());
             }
         }
 
         return res && (validationResult == null || isFirstNotNull);
+    }
+
+    private static boolean validationResultsEquals(ValidationResult first, ValidationResult second) {
+        if (first == null) {
+            return second == null;
+        } else {
+            return first.isCompliant() == second.isCompliant()
+                    && first.getPDFAFlavour() == second.getPDFAFlavour()
+                    && first.getTotalAssertions() == second.getTotalAssertions()
+                    && testAssertionsEquals(first.getTestAssertions(), second.getTestAssertions());
+        }
+    }
+
+    private static boolean testAssertionsEquals(Set<TestAssertion> first, Set<TestAssertion> second) {
+        if (first.size() != second.size()) {
+            return false;
+        }
+        TestAssertionContextFreeComparator comparator = new TestAssertionContextFreeComparator();
+        List<TestAssertion> firstList = new ArrayList<>(first);
+        Collections.sort(firstList, comparator);
+        List<TestAssertion> secondList = new ArrayList<>(second);
+        Collections.sort(secondList, comparator);
+        int size = first.size();
+        for (int i = 0; i < size; ++i) {
+            if (comparator.compare(firstList.get(i), secondList.get(i)) != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 //    public boolean doesMetadataFixerResultsEquals() throws ModelParsingException, IOException, ValidationException {
