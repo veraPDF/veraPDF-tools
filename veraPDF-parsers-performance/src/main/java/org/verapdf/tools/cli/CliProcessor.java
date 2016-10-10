@@ -1,5 +1,6 @@
 package org.verapdf.tools.cli;
 
+import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
@@ -74,7 +75,7 @@ final class CliProcessor {
 		if (checkFileCanBeProcessed(pdfFile)) {
 			try (InputStream toProcess = new FileInputStream(pdfFile)) {
 				processStream(toProcess, pdfFile.getAbsolutePath());
-			} catch (IOException | ModelParsingException e) {
+			} catch (IOException | ModelParsingException | EncryptedPdfException e) {
 				System.err.println("Exception raised while processing " + pdfFile.getAbsolutePath());
 				e.printStackTrace();
 			}
@@ -92,7 +93,7 @@ final class CliProcessor {
 		return true;
 	}
 
-	private void processStream(final InputStream toProcess, String filePath) throws IOException, ModelParsingException {
+	private void processStream(final InputStream toProcess, String filePath) throws IOException, ModelParsingException, EncryptedPdfException {
 		File profileFile = args.getProfileFile();
 		ValidationProfile profile = null;
 		try {
@@ -145,13 +146,13 @@ final class CliProcessor {
 		System.out.println(processType + " results:");
 		System.out.println("	Equals: " + isEquals);
 		System.out.println("	" + convertMillisToHumanReadableTime(pdfboxTime) + " PDFBox based time");
-		System.out.println("	" + convertMillisToHumanReadableTime(pdfboxTime) + "Greenfield based time");
+		System.out.println("	" + convertMillisToHumanReadableTime(greenfieldTime) + " Greenfield based time");
 
-		double pr = (greenfieldTime/pdfboxTime)*100 - 100;
+		double pr = (greenfieldTime*1./pdfboxTime)*100 - 100;
 		if (pr > 0) {
-			System.out.println("	SLOWER " + pr + "%");
+			System.out.println("	SLOWER " + (int)pr + "%");
 		} else if (pr < 0) {
-			System.out.println("	FASTER" + Math.abs(pr) + "%");
+			System.out.println("	FASTER " + Math.abs((int)pr) + "%");
 		} else {
 			System.out.println("	EQUAL");
 		}
