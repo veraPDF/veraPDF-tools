@@ -1,6 +1,7 @@
 package org.verapdf.tools.utils;
 
 import org.verapdf.pdfa.results.TestAssertion;
+import org.verapdf.pdfa.validation.RuleId;
 
 import java.util.Comparator;
 
@@ -11,17 +12,11 @@ public class TestAssertionContextFreeComparator implements Comparator<TestAssert
 
 	@Override
 	public int compare(TestAssertion first, TestAssertion second) {
-		return getHashWithoutContext(first).compareTo(getHashWithoutContext(second));
+		return ruleIDWithStatus(first).compareTo(ruleIDWithStatus(second));
 	}
 
-	private static String getHashWithoutContext(TestAssertion assertion) {
-		return assertion.getRuleId().getClause() + " " + assertion.getRuleId().getTestNumber() + " " + assertion.getStatus();
-//		final int prime = 31;
-//		int result = 1;
-//		result = prime * result + assertion.getOrdinal();
-//		result = prime * result + ((assertion.getMessage() == null) ? 0 : assertion.getMessage().hashCode());
-//		result = prime * result + ((assertion.getRuleId() == null) ? 0 : assertion.getRuleId().hashCode());
-//		result = prime * result + ((assertion.getStatus() == null) ? 0 : assertion.getStatus().hashCode());
-//		return result;
+	private static String ruleIDWithStatus(TestAssertion assertion) {
+		RuleId ruleId = assertion.getRuleId();
+		return ruleId.getSpecification().toString() + " " + ruleId.getClause() + " " + ruleId.getTestNumber() + " " + assertion.getStatus();
 	}
 }
