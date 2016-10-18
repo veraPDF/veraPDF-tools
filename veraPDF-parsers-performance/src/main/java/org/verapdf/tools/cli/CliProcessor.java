@@ -105,8 +105,8 @@ final class CliProcessor {
 			e.printStackTrace();
 		}
 		ParsersPerformanceChecker checker = profile == null ?
-				ParsersPerformanceChecker.createCheckerWithFlavour(toProcess, args.getFlavour(), args.logPassed(), args.maxFailures())
-				: ParsersPerformanceChecker.createCheckerWithProfile(toProcess, profile, args.logPassed(), args.maxFailures());
+				ParsersPerformanceChecker.createCheckerWithFlavour(toProcess, args.getFlavour(), args.hidePassed(), args.maxFailures())
+				: ParsersPerformanceChecker.createCheckerWithProfile(toProcess, profile, args.hidePassed(), args.maxFailures());
 
 		System.out.println();
 		System.out.println("File: " + filePath);

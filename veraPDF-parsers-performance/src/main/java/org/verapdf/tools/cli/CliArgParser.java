@@ -23,7 +23,7 @@ public class CliArgParser {
 	final static String FLAVOUR_FLAG = FLAG_SEP + "f";
 	final static String FLAVOUR = OPTION_SEP + "flavour";
 	final static String SUCCESS = OPTION_SEP + "success";
-	final static String PASSED = OPTION_SEP + "passed";
+	final static String PASSED = OPTION_SEP + "hidePassed";
 	final static String LIST_FLAG = FLAG_SEP + "l";
 	final static String LIST = OPTION_SEP + "list";
 	final static String LOAD_PROFILE_FLAG = FLAG_SEP + "p";
@@ -32,7 +32,6 @@ public class CliArgParser {
 	final static String EXTRACT = OPTION_SEP + "extract";
 	final static String RECURSE_FLAG = FLAG_SEP + "r";
 	final static String RECURSE = OPTION_SEP + "recurse";
-	final static String MAX_FAILURES_DISPLAYED = OPTION_SEP + "maxfailuresdisplayed";
 	final static String MAX_FAILURES = OPTION_SEP + "maxfailures";
 	final static String FIX_METADATA = OPTION_SEP + "fixmetadata";
 
@@ -45,8 +44,8 @@ public class CliArgParser {
 	@Parameter(names = { FLAVOUR_FLAG, FLAVOUR }, description = "Choose built in Validation Profile flavour, e.g. 1b. Alternatively supply 0 to turn off PDF/A validation or supply auto to automatic flavour detection from file's metadata.", converter = FlavourConverter.class)
 	private PDFAFlavour flavour = PDFAFlavour.AUTO;
 
-	@Parameter(names = { SUCCESS, PASSED }, description = "Logs successful validation checks.")
-	private boolean passed = true;
+	@Parameter(names = { SUCCESS, PASSED }, description = "Hide successful validation checks.")
+	private boolean hidePassed = false;
 
 	@Parameter(names = { LIST_FLAG, LIST }, description = "List built in Validation Profiles.")
 	private boolean listProfiles = false;
@@ -112,10 +111,10 @@ public class CliArgParser {
 	}
 
 	/**
-	 * @return true if log passed checks requested
+	 * @return true if hide passed checks requested
 	 */
-	public boolean logPassed() {
-		return this.passed;
+	public boolean hidePassed() {
+		return this.hidePassed;
 	}
 
 	/**
