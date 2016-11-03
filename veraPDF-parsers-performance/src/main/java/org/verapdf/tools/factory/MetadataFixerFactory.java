@@ -1,6 +1,6 @@
 package org.verapdf.tools.factory;
 
-import org.verapdf.metadata.fixer.impl.fixer.MetadataFixerEnum;
+import org.verapdf.metadata.fixer.MetadataFixerEnum;
 import org.verapdf.pdfa.MetadataFixer;
 import org.verapdf.tools.performance.ModelParserType;
 

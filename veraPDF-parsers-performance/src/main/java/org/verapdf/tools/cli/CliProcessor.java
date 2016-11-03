@@ -4,8 +4,8 @@ import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
-import org.verapdf.pdfa.validation.Profiles;
-import org.verapdf.pdfa.validation.ValidationProfile;
+import org.verapdf.pdfa.validation.profiles.Profiles;
+import org.verapdf.pdfa.validation.profiles.ValidationProfile;
 import org.verapdf.tools.performance.ModelParserType;
 import org.verapdf.tools.performance.ParsersPerformanceChecker;
 
@@ -111,7 +111,7 @@ final class CliProcessor {
 		System.out.println();
 		System.out.println("File: " + filePath);
 
-		if (isValidation()) {
+		if (!args.isValidationOff()) {
 			try {
 				showResults("Validation",
 						checker.doesValidationResultsEquals(),
@@ -136,10 +136,6 @@ final class CliProcessor {
 					checker.getTimeOfFeaturesCollecting(ModelParserType.PDFBOX),
 					checker.getTimeOfFeaturesCollecting(ModelParserType.GREENFIELD));
 		}
-	}
-
-	private boolean isValidation() {
-		return args.getFlavour() != PDFAFlavour.NO_FLAVOUR || args.getProfileFile() != null;
 	}
 
 	private void showResults(String processType, boolean isEquals, long pdfboxTime, long greenfieldTime) {

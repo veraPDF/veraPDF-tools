@@ -3,12 +3,12 @@ package org.verapdf.tools.cli;
 import java.io.IOException;
 
 import org.verapdf.ReleaseDetails;
-import org.verapdf.pdfa.validation.ProfileDirectory;
-import org.verapdf.pdfa.validation.Profiles;
-import org.verapdf.pdfa.validation.ValidationProfile;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import org.verapdf.pdfa.validation.profiles.ProfileDirectory;
+import org.verapdf.pdfa.validation.profiles.Profiles;
+import org.verapdf.pdfa.validation.profiles.ValidationProfile;
 
 /**
  * @author Maksim Bezrukov
