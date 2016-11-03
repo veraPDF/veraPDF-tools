@@ -3,19 +3,18 @@ package org.verapdf.tools.performance;
 import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
-import org.verapdf.features.config.FeaturesConfig;
-import org.verapdf.features.tools.FeaturesCollection;
-import org.verapdf.pdfa.MetadataFixer;
+import org.verapdf.features.FeatureExtractionResult;
+import org.verapdf.features.FeatureExtractorConfig;
+import org.verapdf.features.FeatureFactory;
+import org.verapdf.features.FeatureObjectType;
+import org.verapdf.pdfa.PDFAParser;
 import org.verapdf.pdfa.PDFAValidator;
-import org.verapdf.pdfa.PDFParser;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.results.MetadataFixerResult;
 import org.verapdf.pdfa.results.TestAssertion;
 import org.verapdf.pdfa.results.ValidationResult;
-import org.verapdf.pdfa.validation.RuleId;
-import org.verapdf.pdfa.validation.ValidationProfile;
-import org.verapdf.pdfa.validators.Validators;
-import org.verapdf.tools.factory.MetadataFixerFactory;
+import org.verapdf.pdfa.validation.profiles.ValidationProfile;
+import org.verapdf.pdfa.validation.validators.ValidatorFactory;
 import org.verapdf.tools.factory.ModelParserFactory;
 import org.verapdf.tools.utils.TestAssertionContextFreeComparator;
 
@@ -28,30 +27,7 @@ import java.util.*;
  */
 public class ParsersPerformanceChecker {
 
-    private static FeaturesConfig featuresConfig;
-
-    static {
-        FeaturesConfig.Builder configBuilder = new FeaturesConfig.Builder();
-        configBuilder.informationDict(true);
-        configBuilder.metadata(true);
-        configBuilder.documentSecurity(true);
-        configBuilder.signatures(true);
-        configBuilder.lowLevelInfo(true);
-        configBuilder.embeddedFiles(true);
-        configBuilder.iccProfiles(true);
-        configBuilder.outputIntents(true);
-        configBuilder.outlines(true);
-        configBuilder.annotations(true);
-        configBuilder.pages(true);
-        configBuilder.graphicsStates(true);
-        configBuilder.colorSpaces(true);
-        configBuilder.patterns(true);
-        configBuilder.shadings(true);
-        configBuilder.xobjects(true);
-        configBuilder.fonts(true);
-        configBuilder.propertiesDicts(true);
-        featuresConfig = configBuilder.build();
-    }
+    private static FeatureExtractorConfig featuresConfig = FeatureFactory.createConfig(EnumSet.allOf(FeatureObjectType.class));
 
     private Map<ModelParserType, ModelParserResults> parsers = new EnumMap<ModelParserType, ModelParserResults>(ModelParserType.class);
     private ValidationProfile profile = null;
@@ -90,7 +66,7 @@ public class ParsersPerformanceChecker {
         PDFAFlavour pdfaFlavour = checker.profile == null ? flavour : checker.profile.getPDFAFlavour();
         for (ModelParserType type : ModelParserType.values()) {
             InputStream is = new FileInputStream(temp);
-            PDFParser parser = ModelParserFactory.createModelParser(type, is, pdfaFlavour);
+            PDFAParser parser = ModelParserFactory.createModelParser(type, is, pdfaFlavour);
             ModelParserResults modelParserResults = new ModelParserResults(parser, temp);
             checker.parsers.put(type, modelParserResults);
         }
@@ -187,7 +163,7 @@ public class ParsersPerformanceChecker {
     public boolean doesFeaturesCollectionsEquals() {
         boolean res = true;
         boolean isFirstNotNull = true;
-        FeaturesCollection featuresCollection = null;
+        FeatureExtractionResult featuresCollection = null;
 
         for (Map.Entry<ModelParserType, ModelParserResults> entry : this.parsers.entrySet()) {
             if (entry.getValue().getFeaturesCollection() == null) {
@@ -252,7 +228,7 @@ public class ParsersPerformanceChecker {
 //        return modelParserResults.getMetadataFixerResult();
 //    }
 
-    public FeaturesCollection getFeaturesCollection(ModelParserType type) {
+    public FeatureExtractionResult getFeaturesCollection(ModelParserType type) {
         ModelParserResults modelParserResults = parsers.get(type);
         if (modelParserResults.getFeaturesCollection() == null) {
             collectFeatures(type);
@@ -263,10 +239,10 @@ public class ParsersPerformanceChecker {
 
     private void validate(ModelParserType type) throws ValidationException, ModelParsingException {
         ModelParserResults res = this.parsers.get(type);
-        PDFParser parser = res.getParser();
+        PDFAParser parser = res.getParser();
         PDFAValidator validator = this.profile != null ?
-                Validators.createValidator(this.profile, this.logPassed, this.maxFail)
-                : Validators.createValidator(parser.getFlavour(), this.logPassed, this.maxFail);
+                ValidatorFactory.createValidator(this.profile, this.logPassed, this.maxFail)
+                : ValidatorFactory.createValidator(parser.getFlavour(), this.logPassed, this.maxFail);
         long startTime = System.currentTimeMillis();
         ValidationResult result = validator.validate(parser);
         long endTime = System.currentTimeMillis();
@@ -293,24 +269,24 @@ public class ParsersPerformanceChecker {
 
     private void collectFeatures(ModelParserType type) {
         ModelParserResults res = this.parsers.get(type);
-        PDFParser parser = res.getParser();
+        PDFAParser parser = res.getParser();
         long startTime = System.currentTimeMillis();
-        FeaturesCollection result = parser.getFeatures(featuresConfig);
+        FeatureExtractionResult result = parser.getFeatures(featuresConfig);
         long endTime = System.currentTimeMillis();
         res.setFeaturesCollection(result, endTime - startTime);
     }
 
     private static class ModelParserResults {
-        private PDFParser parser;
+        private PDFAParser parser;
         private File temp;
         private ValidationResult validationResult = null;
         private long validationTime = 0;
         private MetadataFixerResult metadataFixerResult = null;
         private long metadataFixerTime = 0;
-        private FeaturesCollection featuresCollection = null;
+        private FeatureExtractionResult featuresCollection = null;
         private long featuresCollectionTime = 0;
 
-        public ModelParserResults(PDFParser parser, File temp) {
+        public ModelParserResults(PDFAParser parser, File temp) {
             if (parser == null) {
                 throw new IllegalArgumentException("ModelParser can't be null");
             }
@@ -321,7 +297,7 @@ public class ParsersPerformanceChecker {
             this.temp = temp;
         }
 
-        public PDFParser getParser() {
+        public PDFAParser getParser() {
             return parser;
         }
 
@@ -345,7 +321,7 @@ public class ParsersPerformanceChecker {
             return metadataFixerTime;
         }
 
-        public FeaturesCollection getFeaturesCollection() {
+        public FeatureExtractionResult getFeaturesCollection() {
             return featuresCollection;
         }
 
@@ -363,7 +339,7 @@ public class ParsersPerformanceChecker {
             this.metadataFixerTime = metadataFixerTime;
         }
 
-        public void setFeaturesCollection(FeaturesCollection featuresCollection, long featuresCollectionTime) {
+        public void setFeaturesCollection(FeatureExtractionResult featuresCollection, long featuresCollectionTime) {
             this.featuresCollection = featuresCollection;
             this.featuresCollectionTime = featuresCollectionTime;
         }

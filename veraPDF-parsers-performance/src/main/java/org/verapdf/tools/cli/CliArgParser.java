@@ -34,6 +34,8 @@ public class CliArgParser {
 	final static String RECURSE = OPTION_SEP + "recurse";
 	final static String MAX_FAILURES = OPTION_SEP + "maxfailures";
 	final static String FIX_METADATA = OPTION_SEP + "fixmetadata";
+	final static String VALID_OFF_FLAG = FLAG_SEP + "o";
+	final static String VALID_OFF = OPTION_SEP + "off";
 
 	@Parameter(names = { HELP_FLAG, HELP }, description = "Shows this message and exits.", help = true)
 	private boolean help = false;
@@ -41,8 +43,10 @@ public class CliArgParser {
 	@Parameter(names = { VERSION }, description = "Version information.")
 	private boolean showVersion = false;
 
-	@Parameter(names = { FLAVOUR_FLAG, FLAVOUR }, description = "Choose built in Validation Profile flavour, e.g. 1b. Alternatively supply 0 to turn off PDF/A validation or supply auto to automatic flavour detection from file's metadata.", converter = FlavourConverter.class)
-	private PDFAFlavour flavour = PDFAFlavour.AUTO;
+	@Parameter(names = { FLAVOUR_FLAG, FLAVOUR }, description = "Chooses built-in Validation Profile flavour, e.g. '1b'. Alternatively," +
+			"supply '0' or no argument for automatic flavour detection based on a file's" +
+			"metadata.", converter = FlavourConverter.class)
+	private PDFAFlavour flavour = PDFAFlavour.NO_FLAVOUR;
 
 	@Parameter(names = { SUCCESS, PASSED }, description = "Hide successful validation checks.")
 	private boolean hidePassed = false;
@@ -64,6 +68,10 @@ public class CliArgParser {
 
 	@Parameter(names = { FIX_METADATA }, description = "Performs metadata fix.")
 	private boolean fixMetadata = false;
+
+	@Parameter(names = { VALID_OFF_FLAG, VALID_OFF }, description = "Turns off PDF/A validation")
+	private boolean isValidationOff = false;
+
 
 	@Parameter(description = "FILES")
 	private List<String> pdfPaths = new ArrayList<>();
@@ -143,6 +151,10 @@ public class CliArgParser {
 	 */
 	public List<String> getPdfPaths() {
 		return this.pdfPaths;
+	}
+
+	public boolean isValidationOff() {
+		return this.isValidationOff;
 	}
 
 	/**

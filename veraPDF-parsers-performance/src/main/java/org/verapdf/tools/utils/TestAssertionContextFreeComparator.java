@@ -1,7 +1,7 @@
 package org.verapdf.tools.utils;
 
 import org.verapdf.pdfa.results.TestAssertion;
-import org.verapdf.pdfa.validation.RuleId;
+import org.verapdf.pdfa.validation.profiles.RuleId;
 
 import java.util.Comparator;
 
