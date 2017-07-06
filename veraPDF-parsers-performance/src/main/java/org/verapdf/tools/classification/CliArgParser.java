@@ -1,4 +1,4 @@
-package org.verapdf.tools.cli;
+package org.verapdf.tools.classification;
 
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.IStringConverter;

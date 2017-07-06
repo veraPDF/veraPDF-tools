@@ -1,4 +1,4 @@
-package org.verapdf.tools.cli;
+package org.verapdf.tools.classification;
 
 import java.io.IOException;
 
@@ -86,7 +86,6 @@ public final class Cli {
 		ReleaseDetails details = RELEASE_DETAILS.byId("gui");
 		System.out.println("Version: " + details.getVersion());
 		System.out.println("Built: " + details.getBuildDate());
-		System.out.println(details.getRights());
 		System.out.println();
 	}
 

@@ -1,4 +1,4 @@
-package org.verapdf.tools.cli;
+package org.verapdf.tools.classification;
 
 import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
