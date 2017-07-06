@@ -1,4 +1,4 @@
-package org.verapdf.tools.classification;
+package org.verapdf.tools.cli;
 
 import java.io.IOException;
 
