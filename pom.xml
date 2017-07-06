@@ -7,7 +7,7 @@
     <parent>
         <artifactId>verapdf-parent</artifactId>
         <groupId>org.verapdf</groupId>
-        <version>1.0.15</version>
+        <version>1.4.1</version>
     </parent>
 
     <groupId>org.verapdf</groupId>
@@ -16,6 +16,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>veraPDF-parsers-performance</module>
+        <module>preforma-classification</module>
     </modules>
 
     <repositories>
@@ -28,6 +29,16 @@
             <url>http://artifactory.openpreservation.org/artifactory/vera-dev</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>vera-dev</id>
+            <name>Vera development</name>
+            <url>http://artifactory.openpreservation.org/artifactory/vera-dev</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>

@@ -27,7 +27,7 @@ import java.util.*;
  */
 public class ParsersPerformanceChecker {
 
-    private static FeatureExtractorConfig featuresConfig = FeatureFactory.createConfig(EnumSet.allOf(FeatureObjectType.class));
+    private static FeatureExtractorConfig featuresConfig = FeatureFactory.configFromValues(EnumSet.allOf(FeatureObjectType.class));
 
     private Map<ModelParserType, ModelParserResults> parsers = new EnumMap<ModelParserType, ModelParserResults>(ModelParserType.class);
     private ValidationProfile profile = null;
