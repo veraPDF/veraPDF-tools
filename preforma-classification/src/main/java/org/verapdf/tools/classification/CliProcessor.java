@@ -92,11 +92,14 @@ final class CliProcessor {
 				date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
 		arguments.put("date",
 				dateString);
-		File out = new File(dateString + "_veraPDF_" + version + ".txt");
-		System.out.println(out.getAbsolutePath());
-		OutputStream os = new FileOutputStream(out);
+		arguments.put("onlyPassed", String.valueOf(args.passed()));
+		OutputStream os = System.out;
+		if (!args.console()) {
+			File out = new File(dateString + "_veraPDF_" + version + ".txt");
+			System.out.println(out.getAbsolutePath());
+			os = new FileOutputStream(out);
+		}
 		XsltTransformer.transform(source, xsltIS,
 				os, arguments);
-
 	}
 }
