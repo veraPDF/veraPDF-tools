@@ -2,7 +2,7 @@
 
     <xsl:output method="text"/>
 
-    <xsl:param name="version"/>
+    <xsl:param name="version" select="/report/buildInformation/releaseDetails[@id='gui']/@version"/>
     <xsl:param name="date"/>
     <xsl:param name="onlyPassed"/>
 

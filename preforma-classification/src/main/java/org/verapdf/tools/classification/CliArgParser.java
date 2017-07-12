@@ -14,16 +14,20 @@ public class CliArgParser {
 	final static String OPTION_SEP = "--";
 	final static String HELP_FLAG = FLAG_SEP + "h";
 	final static String HELP = OPTION_SEP + "help";
-	final static String VERSION = OPTION_SEP + "version";
+	final static String RANTAG = OPTION_SEP + "ranTag";
 	final static String XSLT = OPTION_SEP + "xslt";
 	final static String CONSOLE = OPTION_SEP + "console";
 	final static String PASSED = OPTION_SEP + "passed";
+	final static String FILENAME = OPTION_SEP + "fileName";
 
 	@Parameter(names = { HELP_FLAG, HELP }, description = "Shows this message and exits.", help = true)
 	private boolean help = false;
 
-	@Parameter(names = { VERSION }, description = "Version information for output.", required = true)
-	private String version;
+	@Parameter(names = { RANTAG }, description = "Ran tag.")
+	private String ranTag = "";
+
+	@Parameter(names = { FILENAME }, description = "Custom file name.")
+	private String fileName;
 
 	@Parameter(names = { XSLT }, description = "XSLT for transformation.", required = true)
 	private String xslt;
@@ -37,8 +41,12 @@ public class CliArgParser {
 	@Parameter(description = "REPORT", required = true)
 	private List<String> reportPaths = new ArrayList<>();
 
-	public String version() {
-		return this.version;
+	public String ranTag() {
+		return this.ranTag;
+	}
+
+	public String fileName() {
+		return this.fileName;
 	}
 
 	/**
