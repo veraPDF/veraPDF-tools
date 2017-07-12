@@ -85,8 +85,6 @@ final class CliProcessor {
 		File xslt = new File(args.xslt());
 		InputStream xsltIS = new FileInputStream(xslt);
 		Map<String, String> arguments = new HashMap<>();
-		String version = args.version();
-		arguments.put("version", version);
 		Calendar date = new GregorianCalendar();
 		String dateString = String.format("%04d%02d%02d",
 				date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
@@ -95,7 +93,9 @@ final class CliProcessor {
 		arguments.put("onlyPassed", String.valueOf(args.passed()));
 		OutputStream os = System.out;
 		if (!args.console()) {
-			File out = new File(dateString + "_veraPDF_" + version + ".txt");
+			String fileName = args.fileName();
+			String resultFileName = fileName == null ? dateString + "_veraPDF_" + args.ranTag() + ".txt" : fileName;
+			File out = new File(resultFileName);
 			System.out.println(out.getAbsolutePath());
 			os = new FileOutputStream(out);
 		}
