@@ -17,6 +17,7 @@
     <modules>
         <module>veraPDF-parsers-performance</module>
         <module>preforma-classification</module>
+        <module>pdf-stream-dump</module>
     </modules>
 
     <repositories>
