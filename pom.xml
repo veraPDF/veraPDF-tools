@@ -20,6 +20,10 @@
         <module>pdf-stream-dump</module>
     </modules>
 
+    <properties>
+        <verapdf.version>[1.13.0,1.14.0)</verapdf.version>
+    </properties>
+
     <repositories>
         <repository>
             <snapshots>

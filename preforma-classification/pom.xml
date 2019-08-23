@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.verapdf</groupId>
             <artifactId>core</artifactId>
-            <version>[1.11.0,1.12.0)</version>
+            <version>${verapdf.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
