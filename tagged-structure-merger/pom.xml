@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>preforma-classification</artifactId>
+    <artifactId>tagged-structure-merger</artifactId>
 
     <dependencies>
         <dependency>
@@ -36,7 +36,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.verapdf.tools.classification.Cli</mainClass>
+                            <mainClass>org.verapdf.tools.tagged.Cli</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
