@@ -128,14 +128,15 @@ public class StructureRuleCreator {
 		int testNumber = 0;
 
 		// standard structure type requirement
+		List<Reference> annex_l_reference = Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "Annex_L"));
 		res.add(Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex L", ++testNumber),
+				Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex_L", ++testNumber),
 				STRUCT_ELEM_OBJECT,
 				false,
 				"Every structure element shall be mapped to standard type",
 				"standardType != null",
 				Profiles.errorFromValues("Structure element does not map to standard structure type", Collections.emptyList()),
-				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "Annex L"))));
+				annex_l_reference));
 
 		for (ParsedRelationStructure relation : relations) {
 			if (shallProcess(relation)) {
@@ -144,11 +145,10 @@ public class StructureRuleCreator {
 					System.err.println("Missing rule for " + relation.getDescriptionString());
 					continue;
 				}
-				RuleId id = Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex L", ++testNumber);
-				Reference reference = Profiles.referenceFromValues(this.pdfVersion.getIso(), "Annex L");
+				RuleId id = Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex_L", ++testNumber);
 				ErrorDetails error = Profiles.errorFromValues(data.errorMessage, Collections.emptyList());
 				res.add(Profiles.ruleFromValues(id, data.object, false, data.description,
-				                                data.test, error, Collections.singletonList(reference)));
+				                                data.test, error, annex_l_reference));
 			}
 		}
 		return res;
