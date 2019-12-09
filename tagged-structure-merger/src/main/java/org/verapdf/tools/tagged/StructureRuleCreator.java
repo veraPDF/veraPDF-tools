@@ -88,19 +88,19 @@ public class StructureRuleCreator {
 	}
 
 	private static final String HN = "Hn";
-	private static final String CONTENT_ITEM = "content item";
+	private static final String CONTENT_ITEM = "content item(s)";
 	private static final String STRUCT_TREE_ROOT = "StructTreeRoot";
 	private static final String STRUCT_ELEM_OBJECT = "PDStructElem";
 	private static final String STRUCT_TREE_ROOT_OBJECT = "PDStructTreeRoot";
 
-	private static final String FORBIDDEN_DESCRIPTION_FORMAT = "%s elem should not contain %s kid";
-	private static final String FORBIDDEN_ERROR_FORMAT = "%s elem contains %s kid";
+	private static final String FORBIDDEN_DESCRIPTION_FORMAT = "<%s> shall not contain <%s>";
+	private static final String FORBIDDEN_ERROR_FORMAT = "<%s> contains <%s>";
 
-	private static final String AT_LEAST_ONE_DESCRIPTION_FORMAT = "%s elem should contain at least one %s kid";
-	private static final String AT_LEAST_ONE_ERROR_FORMAT = "%s does not contain %s kid";
+	private static final String AT_LEAST_ONE_DESCRIPTION_FORMAT = "<%s> shall contain at least one <%s>";
+	private static final String AT_LEAST_ONE_ERROR_FORMAT = "<%s> does not contain <%s> elements";
 
-	private static final String ZERO_OR_ONE_DESCRIPTION_FORMAT = "%s elem should contain zero or one %s kid";
-	private static final String ZERO_OR_ONE_ERROR_FORMAT = "%s contains more than one %s kid";
+	private static final String ZERO_OR_ONE_DESCRIPTION_FORMAT = "<%s> shall contain at most one <%s>";
+	private static final String ZERO_OR_ONE_ERROR_FORMAT = "<%s> contains more than one <%s>";
 
 	private final PDFVersion pdfVersion;
 	private final PDFAFlavour flavour;
