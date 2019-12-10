@@ -88,7 +88,7 @@ public class StructureRuleCreator {
 	}
 
 	private static final String HN = "Hn";
-	private static final String CONTENT_ITEM = "content item(s)";
+	private static final String CONTENT_ITEM = "content item";
 	private static final String STRUCT_TREE_ROOT = "StructTreeRoot";
 	private static final String STRUCT_ELEM_OBJECT = "PDStructElem";
 	private static final String STRUCT_TREE_ROOT_OBJECT = "PDStructTreeRoot";
