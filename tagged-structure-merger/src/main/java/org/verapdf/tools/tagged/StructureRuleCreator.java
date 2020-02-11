@@ -90,8 +90,9 @@ public class StructureRuleCreator {
 	private static final String HN = "Hn";
 	private static final String CONTENT_ITEM = "content item";
 	private static final String STRUCT_TREE_ROOT = "StructTreeRoot";
-	private static final String STRUCT_ELEM_OBJECT = "PDStructElem";
+
 	private static final String STRUCT_TREE_ROOT_OBJECT = "PDStructTreeRoot";
+	private static final String STRUCT_ELEM_FORMAT = "SE%s";
 
 	private static final String FORBIDDEN_DESCRIPTION_FORMAT = "<%s> shall not contain <%s>";
 	private static final String FORBIDDEN_ERROR_FORMAT = "<%s> contains <%s>";
@@ -128,14 +129,17 @@ public class StructureRuleCreator {
 		int testNumber = 0;
 
 		// standard structure type requirement
-		List<Reference> annex_l_reference = Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "Annex_L"));
+		List<Reference> annex_l_reference = Collections.singletonList(Profiles.referenceFromValues(
+				this.pdfVersion.getIso(), "Annex_L"));
+
 		res.add(Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex_L", ++testNumber),
-				STRUCT_ELEM_OBJECT,
+				"SENonStandard",
 				false,
-				"Every structure element shall be mapped to standard type",
-				"standardType != null",
-				Profiles.errorFromValues("Structure element does not map to standard structure type", Collections.emptyList()),
+				"Every structure element should be mapped to standard type",
+				"false",
+				Profiles.errorFromValues("Structure element does not mapped to standard structure type",
+						Collections.emptyList()),
 				annex_l_reference));
 
 		for (ParsedRelationStructure relation : relations) {
@@ -216,20 +220,17 @@ public class StructureRuleCreator {
 
 		String childTest = constructChildElemAmountPart(child) + " <= 1";
 		String testObj;
-		String test;
 
 		String parent = rel.getParent();
 		switch (parent) {
 			case STRUCT_TREE_ROOT:
 				testObj = STRUCT_TREE_ROOT_OBJECT;
-				test = childTest;
 				break;
 			default:
-				testObj = STRUCT_ELEM_OBJECT;
-				test = "(" + constructParentElemTestPart(parent) + ") || (" + childTest + ")";
+				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
 		}
 
-		return new RuleData(testObj, test,
+		return new RuleData(testObj, childTest,
 		                    String.format(ZERO_OR_ONE_DESCRIPTION_FORMAT, parent, child),
 		                    String.format(ZERO_OR_ONE_ERROR_FORMAT, parent, child));
 	}
@@ -248,18 +249,15 @@ public class StructureRuleCreator {
 		}
 
 		String testObj;
-		String test;
 		switch (parent) {
 			case STRUCT_TREE_ROOT:
 				testObj = STRUCT_TREE_ROOT_OBJECT;
-				test = childTest;
 				break;
 			default:
-				testObj = STRUCT_ELEM_OBJECT;
-				test = "(" + constructParentElemTestPart(parent) + ") || (" + childTest + ")";
+				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
 		}
 
-		return new RuleData(testObj, test,
+		return new RuleData(testObj, childTest,
 		                    String.format(FORBIDDEN_DESCRIPTION_FORMAT, parent, child),
 		                    String.format(FORBIDDEN_ERROR_FORMAT, parent, child));
 	}
@@ -278,36 +276,17 @@ public class StructureRuleCreator {
 		}
 
 		String testObj;
-		String test;
 		switch (parent) {
 			case STRUCT_TREE_ROOT:
 				testObj = STRUCT_TREE_ROOT_OBJECT;
-				test = childTest;
 				break;
 			default:
-				testObj = STRUCT_ELEM_OBJECT;
-				test = "(" + constructParentElemTestPart(parent) + ") || (" + childTest + ")";
+				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
 		}
 
-		return new RuleData(testObj, test,
+		return new RuleData(testObj, childTest,
 		                    String.format(FORBIDDEN_DESCRIPTION_FORMAT, parent, child),
 		                    String.format(FORBIDDEN_ERROR_FORMAT, parent, child));
-	}
-
-	private String constructParentElemTestPart(String parent) {
-		switch (parent) {
-			case HN:
-				switch (this.pdfVersion) {
-					case PDF_1_7:
-						return "/^H[1-6]$/.test(standardType) == false";
-					case PDF_2_0:
-						return "/^H[1-9][0-9]*$/.test(standardType) == false";
-					default:
-						throw new IllegalStateException("Unknown pdf version");
-				}
-			default:
-				return String.format("standardType != '%s'", parent);
-		}
 	}
 
 	private String constructChildElemAmountPart(String child) {
