@@ -19,10 +19,11 @@
         <module>preforma-classification</module>
         <module>pdf-stream-dump</module>
         <module>tagged-structure-merger</module>
+        <module>pdf-decode-streams</module>
     </modules>
 
     <properties>
-        <verapdf.version>[1.15.0,1.16.0)</verapdf.version>
+        <verapdf.version>[1.17.0,1.18.0-RC)</verapdf.version>
     </properties>
 
     <repositories>
