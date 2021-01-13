@@ -119,7 +119,7 @@ public class ParsersPerformanceChecker {
         }
     }
 
-    private static boolean testAssertionsEquals(Set<TestAssertion> first, Set<TestAssertion> second) {
+    private static boolean testAssertionsEquals(List<TestAssertion> first, List<TestAssertion> second) {
         if (first.size() != second.size()) {
             return false;
         }
