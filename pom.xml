@@ -7,7 +7,7 @@
     <parent>
         <artifactId>verapdf-parent</artifactId>
         <groupId>org.verapdf</groupId>
-        <version>1.14.3</version>
+        <version>1.21.1</version>
     </parent>
 
     <groupId>org.verapdf</groupId>
@@ -20,10 +20,11 @@
         <module>pdf-stream-dump</module>
         <module>tagged-structure-merger</module>
         <module>pdf-decode-streams</module>
+        <module>pdf-decode-fonts</module>
     </modules>
 
     <properties>
-        <verapdf.version>[1.17.0,1.18.0-RC)</verapdf.version>
+        <verapdf.version>[1.21.0,1.22.0-RC)</verapdf.version>
     </properties>
 
     <repositories>
