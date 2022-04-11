@@ -21,6 +21,7 @@
         <module>tagged-structure-merger</module>
         <module>pdf-decode-streams</module>
         <module>pdf-decode-fonts</module>
+        <module>policy-generator</module>
     </modules>
 
     <properties>
@@ -34,7 +35,7 @@
             </snapshots>
             <id>vera-dev</id>
             <name>Vera development</name>
-            <url>http://artifactory.openpreservation.org/artifactory/vera-dev</url>
+            <url>https://artifactory.openpreservation.org/artifactory/vera-dev</url>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -44,7 +45,7 @@
             </snapshots>
             <id>vera-dev</id>
             <name>Vera development</name>
-            <url>http://artifactory.openpreservation.org/artifactory/vera-dev</url>
+            <url>https://artifactory.openpreservation.org/artifactory/vera-dev</url>
         </pluginRepository>
     </pluginRepositories>
 
