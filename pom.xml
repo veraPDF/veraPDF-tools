@@ -15,13 +15,15 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>veraPDF-parsers-performance</module>
-        <module>preforma-classification</module>
-        <module>pdf-stream-dump</module>
-        <module>tagged-structure-merger</module>
         <module>pdf-decode-streams</module>
         <module>pdf-decode-fonts</module>
+        <module>pdf-deprecated-finder</module>
+        <module>pdf-stream-change</module>
+        <module>pdf-stream-dump</module>
         <module>policy-generator</module>
+        <module>preforma-classification</module>
+        <module>tagged-structure-merger</module>
+        <module>veraPDF-parsers-performance</module>
     </modules>
 
     <properties>
