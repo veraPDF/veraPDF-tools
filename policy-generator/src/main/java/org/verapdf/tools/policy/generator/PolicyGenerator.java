@@ -1,5 +1,6 @@
 package org.verapdf.tools.policy.generator;
 
+import org.apache.commons.cli.*;
 import org.verapdf.core.VeraPDFException;
 import org.verapdf.metadata.fixer.FixerFactory;
 import org.verapdf.metadata.fixer.MetadataFixerConfig;
@@ -26,11 +27,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PolicyGenerator {
+    private static final String HELP = "[options] <FILE>\n Options:";
     private static final Logger logger = Logger.getLogger(PolicyGenerator.class.getCanonicalName());
     private Document document;
     private StringBuilder content;
@@ -38,52 +39,65 @@ public class PolicyGenerator {
     private String shortFilePath;
     private InputStream report;
     private ValidationProfile customProfile;
-    private boolean isLogsEnabled;
+    private boolean isLogsEnabled = true;
 
     public PolicyGenerator() throws IOException {
         VeraGreenfieldFoundryProvider.initialise();
     }
 
     public static void main(String[] args) {
+        Options options = defineOptions();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine commandLine;
         try {
-            (new PolicyGenerator()).run();
+            commandLine = (new DefaultParser()).parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp(HELP, options);
+            return;
+        }
+
+        try {
+            PolicyGenerator generator = new PolicyGenerator();
+            if (commandLine.hasOption("n")) {
+                generator.isLogsEnabled = false;
+            }
+            if (commandLine.hasOption("p")) {
+                String profilePath = commandLine.getOptionValue("profile");
+                if (profilePath != null) {
+                    try (InputStream is = new FileInputStream(Paths.get(profilePath).toFile())) {
+                        generator.customProfile = Profiles.profileFromXml(is);
+                    } catch (JAXBException | FileNotFoundException e) {
+                        generator.customProfile = null;
+                        logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (commandLine.getArgs().length < 1) {
+                formatter.printHelp(HELP, options);
+                return;
+            }
+            generator.fileName = String.join(" ", commandLine.getArgs());
+
+            generator.validate();
+            generator.generate();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void run() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("Enter pdf file and profile (optional, space separated) paths (or \"exit\"): ");
-            String paths = scanner.nextLine();
-            if ("exit".equals(paths)) {
-                break;
-            }
-            customProfile = null;
-            String profilePath;
-            if (paths.contains(".xml")) {
-                fileName = paths.split("\\.pdf ")[0] + ".pdf";
-                profilePath = paths.split("\\.pdf ")[1];
-            } else {
-                fileName = paths;
-                profilePath = null;
-            }
-            if (profilePath != null) {
-                try (InputStream is = new FileInputStream(Paths.get(profilePath).toFile())) {
-                    customProfile = Profiles.profileFromXml(is);
-                } catch (JAXBException | FileNotFoundException e) {
-                    customProfile = null;
-                    logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            System.out.println("Is logs enabled? true / false ");
-            isLogsEnabled = scanner.nextLine().contains("true");
-            validate();
-            generate();
-        }
+    private static Options defineOptions() {
+        Options options = new Options();
+        Option isLogsChecked = new Option("n", "nologs", false, "Disables logs check");
+        isLogsChecked.setRequired(false);
+        options.addOption(isLogsChecked);
+        Option profile = new Option("p", "profile", true, "Specifies path to custom profile");
+        profile.setRequired(false);
+        options.addOption(profile);
+        return options;
     }
 
     private void validate() throws IOException {
@@ -132,7 +146,7 @@ public class PolicyGenerator {
                 }
             }
 
-            if (isLogsEnabled && document.getElementsByTagName("logs").getLength() != 0) {
+            if (isLogsEnabled) {
                 appendLogs();
             }
             content.append(PolicyHelper.END);
@@ -224,40 +238,44 @@ public class PolicyGenerator {
 
     private void appendLogs() {
         NodeList nodeList = document.getElementsByTagName("logs");
-        String logsCountToBeReplaced = nodeList.item(0).getAttributes().getNamedItem("logsCount").getNodeValue();
-        content.append(PolicyHelper.LOGS_REPORT
-                .replace("{logsCountToBeReplaced}", logsCountToBeReplaced));
+        if (nodeList.getLength() == 0) {
+            content.append(PolicyHelper.NO_LOGS);
+        } else {
+            String logsCountToBeReplaced = nodeList.item(0).getAttributes().getNamedItem("logsCount").getNodeValue();
+            content.append(PolicyHelper.LOGS_REPORT
+                    .replace("{logsCountToBeReplaced}", logsCountToBeReplaced));
 
-        nodeList = document.getElementsByTagName("logMessage");
-        int size = nodeList.getLength();
-        if (size > 0) {
-            content.append(PolicyHelper.LOGS);
-            StringBuilder messageToBeReplaced = new StringBuilder();
-            for (int i = 0; i < size; ++i) {
-                Node node = nodeList.item(i);
-                String logToBeReplaced = node.getFirstChild().getNodeValue()
-                        .replace("&", "&amp;")
-                        .replace("<", "&lt;")
-                        .replace(">", "&gt;");
-                String occurrencesToBeReplaced = node.getAttributes().getNamedItem("occurrences").getNodeValue();
-                String levelToBeReplaced = node.getAttributes().getNamedItem("level").getNodeValue();
-                content.append(PolicyHelper.LOG
-                        .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;"))
-                        .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
-                        .replace("{levelToBeReplaced}", levelToBeReplaced));
+            nodeList = document.getElementsByTagName("logMessage");
+            int size = nodeList.getLength();
+            if (size > 0) {
+                content.append(PolicyHelper.LOGS);
+                StringBuilder messageToBeReplaced = new StringBuilder();
+                for (int i = 0; i < size; ++i) {
+                    Node node = nodeList.item(i);
+                    String logToBeReplaced = node.getFirstChild().getNodeValue()
+                            .replace("&", "&amp;")
+                            .replace("<", "&lt;")
+                            .replace(">", "&gt;");
+                    String occurrencesToBeReplaced = node.getAttributes().getNamedItem("occurrences").getNodeValue();
+                    String levelToBeReplaced = node.getAttributes().getNamedItem("level").getNodeValue();
+                    content.append(PolicyHelper.LOG
+                            .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;"))
+                            .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
+                            .replace("{levelToBeReplaced}", levelToBeReplaced));
 
-                messageToBeReplaced.append(PolicyHelper.LOG_MESSAGE
-                        .replace("{logToBeReplaced}", logToBeReplaced)
-                        .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
-                        .replace("{levelToBeReplaced}", levelToBeReplaced));
+                    messageToBeReplaced.append(PolicyHelper.LOG_MESSAGE
+                            .replace("{logToBeReplaced}", logToBeReplaced)
+                            .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
+                            .replace("{levelToBeReplaced}", levelToBeReplaced));
 
-                if (i != size - 1) {
-                    content.append(PolicyHelper.OR);
-                    messageToBeReplaced.append(",").append(PolicyHelper.OR);
+                    if (i != size - 1) {
+                        content.append(PolicyHelper.OR);
+                        messageToBeReplaced.append(",").append(PolicyHelper.OR);
+                    }
                 }
+                content.append(PolicyHelper.LOGS_END
+                        .replace("{messageToBeReplaced}", messageToBeReplaced));
             }
-            content.append(PolicyHelper.LOGS_END
-                    .replace("{messageToBeReplaced}", messageToBeReplaced));
         }
         content.append(PolicyHelper.LOGS_REPORT_END);
     }
