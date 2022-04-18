@@ -51,6 +51,10 @@ public class PolicyHelper {
             "        <sch:rule context=\"/report/jobs/job/logs\">\n" +
             "            <sch:assert test=\"@logsCount = '{logsCountToBeReplaced}'\">Failed check, Expected: {logsCountToBeReplaced}</sch:assert>\t\n" +
             "        </sch:rule>\n";
+    public static final String NO_LOGS = "\n    <sch:pattern>name = \"Checking for the absence of logs\"\n" +
+            "        <sch:rule context=\"/report/jobs/job\">\n" +
+            "            <sch:assert test=\"not(logs)\">Failed check, Expected: no logs</sch:assert>\n" +
+            "        </sch:rule>\n";
     public static final String LOGS = "\n" +
             "        <sch:rule context=\"/report/jobs/job/logs/logMessage\">\n" +
             "            <sch:assert test='";
