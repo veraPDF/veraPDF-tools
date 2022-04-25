@@ -40,7 +40,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.verapdf.tools.WriteStream</mainClass>
+                            <mainClass>org.verapdf.tools.Cli</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
