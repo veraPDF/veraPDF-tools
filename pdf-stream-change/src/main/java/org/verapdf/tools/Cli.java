@@ -1,12 +1,8 @@
 package org.verapdf.tools;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSObjectKey;
-import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import java.io.*;
 
@@ -34,19 +30,20 @@ public class Cli {
 			System.out.println("Object with number " + objectNumber + " not found.");
 			return;
 		}
+		COSBase base = object.getObject();
+		if (!(base instanceof COSStream)) {
+			System.out.println("Object with number " + objectNumber + " not a stream.");
+			return;
+		}
+		COSStream stream = (COSStream)base;
 		if (READ.equals(args[0])) {
-			COSBase base = object.getObject();
-			if (!(base instanceof COSStream)) {
-				System.out.println("Object with number " + objectNumber + " not a stream.");
-				return;
-			}
-			COSStream stream = (COSStream)base;
 			try (InputStream in = stream.createInputStream(); OutputStream out = new FileOutputStream(textFileName)) {
 				IOUtils.copy(in, out);
 			}
 		} else if (WRITE.equals(args[0])) {
-			try (InputStream in = new FileInputStream(args[2])) {
-				object.setObject(new PDStream(document, in).getCOSObject());
+			stream.setItem(COSName.FILTER, null);
+			try (InputStream in = new FileInputStream(textFileName); OutputStream out = stream.createOutputStream()) {
+				IOUtils.copy(in, out);
 			}
 		} else {
 			System.out.println(INFO);
