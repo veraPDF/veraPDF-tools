@@ -11,7 +11,8 @@ public enum ChildrenRelation {
 	ZERO_OR_ONE("0..1"),
 	DEPENDS_ON_STRUCTURE("‡"),
 	RUBY("[a]"),
-	WARICHU("[b]");
+	WARICHU("[b]"),
+	ONE("1");
 
 	private String name;
 	private boolean isCommonRule;
@@ -26,7 +27,7 @@ public enum ChildrenRelation {
 				return relation;
 			}
 		}
-		throw new IllegalArgumentException("Children relation with specified name doesn't exist.");
+		throw new IllegalArgumentException("Children relation with specified name " + name + " doesn't exist.");
 	}
 
 	public String getName() {

@@ -18,6 +18,11 @@
             <version>${verapdf.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.verapdf</groupId>
+            <artifactId>parser</artifactId>
+            <version>${verapdf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
         </dependency>
