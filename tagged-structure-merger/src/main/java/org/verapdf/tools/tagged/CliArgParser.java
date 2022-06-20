@@ -28,7 +28,7 @@ public class CliArgParser {
 	private boolean help = false;
 
 	@Parameter(names = { PDF_VERSION_FLAG, PDF_VERSION }, description = "PDF version.", converter = PDFVersionConverter.class)
-	private PDFVersion pdfVersion = PDFVersion.PDF_1_7;
+	private PDFVersion pdfVersion = PDFVersion.PDF_2_0;
 
 	@Parameter(names = { OUTPUT_FLAG, OUTPUT }, description = "Output path. If the value is not specified, then System Out is using")
 	private String outputPath = null;

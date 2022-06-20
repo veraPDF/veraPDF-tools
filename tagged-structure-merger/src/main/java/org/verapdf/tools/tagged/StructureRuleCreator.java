@@ -2,6 +2,7 @@ package org.verapdf.tools.tagged;
 
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.validation.profiles.*;
+import org.verapdf.tools.TaggedPDFHelper;
 import org.verapdf.tools.tagged.enums.ChildrenRelation;
 import org.verapdf.tools.tagged.enums.PDFVersion;
 
@@ -12,81 +13,6 @@ import java.util.*;
  */
 public class StructureRuleCreator {
 
-	private static Set<String> PDF_1_7_STANDARD_ROLE_TYPES;
-	private static Set<String> PDF_2_0_STANDARD_ROLE_TYPES;
-
-	static {
-		Set<String> tempSet = new HashSet<>();
-		// Common standard structure types for PDF 1.7 and 2.0
-		tempSet.add("Document");
-		tempSet.add("Part");
-		tempSet.add("Div");
-		tempSet.add("Caption");
-		tempSet.add("THead");
-		tempSet.add("TBody");
-		tempSet.add("TFoot");
-		tempSet.add("H");
-		tempSet.add("P");
-		tempSet.add("L");
-		tempSet.add("LI");
-		tempSet.add("Lbl");
-		tempSet.add("LBody");
-		tempSet.add("Table");
-		tempSet.add("TR");
-		tempSet.add("TH");
-		tempSet.add("TD");
-		tempSet.add("Span");
-		tempSet.add("Link");
-		tempSet.add("Annot");
-		tempSet.add("Ruby");
-		tempSet.add("Warichu");
-		tempSet.add("Figure");
-		tempSet.add("Formula");
-		tempSet.add("Form");
-		tempSet.add("RB");
-		tempSet.add("RT");
-		tempSet.add("RP");
-		tempSet.add("WT");
-		tempSet.add("WP");
-
-		Set<String> pdf_1_7 = new HashSet<>(tempSet);
-
-		// Standart structure types present in 1.7
-		pdf_1_7.add("Art");
-		pdf_1_7.add("Sect");
-		pdf_1_7.add("BlockQuote");
-		pdf_1_7.add("TOC");
-		pdf_1_7.add("TOCI");
-		pdf_1_7.add("Index");
-		pdf_1_7.add("NonStruct");
-		pdf_1_7.add("Private");
-		pdf_1_7.add("Quote");
-		pdf_1_7.add("Note");
-		pdf_1_7.add("Reference");
-		pdf_1_7.add("BibEntry");
-		pdf_1_7.add("Code");
-		pdf_1_7.add("H1");
-		pdf_1_7.add("H2");
-		pdf_1_7.add("H3");
-		pdf_1_7.add("H4");
-		pdf_1_7.add("H5");
-		pdf_1_7.add("H6");
-
-		Set<String> pdf_2_0 = new HashSet<>(tempSet);
-
-		pdf_2_0.add("DocumentFragment");
-		pdf_2_0.add("Aside");
-		pdf_2_0.add("Title");
-		pdf_2_0.add("FENote");
-		pdf_2_0.add("Sub");
-		pdf_2_0.add("Em");
-		pdf_2_0.add("Strong");
-		pdf_2_0.add("Artifact");
-
-		PDF_1_7_STANDARD_ROLE_TYPES = Collections.unmodifiableSet(pdf_1_7);
-		PDF_2_0_STANDARD_ROLE_TYPES = Collections.unmodifiableSet(pdf_2_0);
-	}
-
 	private static final String HN = "Hn";
 	private static final String CONTENT_ITEM = "content item";
 	private static final String STRUCT_TREE_ROOT = "StructTreeRoot";
@@ -95,13 +21,16 @@ public class StructureRuleCreator {
 	private static final String STRUCT_ELEM_FORMAT = "SE%s";
 
 	private static final String FORBIDDEN_DESCRIPTION_FORMAT = "<%s> shall not contain <%s>";
-	private static final String FORBIDDEN_ERROR_FORMAT = "<%s> contains <%s>";
+	private static final String FORBIDDEN_ERROR_FORMAT = "Invalid parent-child relationship: <%s> contains <%s>";
 
 	private static final String AT_LEAST_ONE_DESCRIPTION_FORMAT = "<%s> shall contain at least one <%s>";
 	private static final String AT_LEAST_ONE_ERROR_FORMAT = "<%s> does not contain <%s> elements";
 
 	private static final String ZERO_OR_ONE_DESCRIPTION_FORMAT = "<%s> shall contain at most one <%s>";
 	private static final String ZERO_OR_ONE_ERROR_FORMAT = "<%s> contains more than one <%s>";
+
+	private static final String ONE_DESCRIPTION_FORMAT = "<%s> shall contain exactly one <%s>";
+	private static final String ONE_ERROR_FORMAT = "<%s> either doesn't contain or contains more than one <%s>";
 
 	private final PDFVersion pdfVersion;
 	private final PDFAFlavour flavour;
@@ -136,12 +65,11 @@ public class StructureRuleCreator {
 				Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex_L", ++testNumber),
 				"SENonStandard",
 				false,
-				"Every structure element should be mapped to standard type",
+				"Every structure element should be mapped to a standard structure type",
 				"false",
-				Profiles.errorFromValues("Structure element does not mapped to standard structure type",
+				Profiles.errorFromValues("Structure element is not mapped to the standard structure type",
 						Collections.emptyList()),
 				annex_l_reference));
-
 		for (ParsedRelationStructure relation : relations) {
 			if (shallProcess(relation)) {
 				RuleData data = getRuleData(relation);
@@ -163,13 +91,13 @@ public class StructureRuleCreator {
 		String child = relation.getChild();
 		// assuming that 2.0 parent->child relations contains all relations from 1.7
 		// first apply 2.0 filter
-		if ((!PDF_1_7_STANDARD_ROLE_TYPES.contains(parent)
-		     && !PDF_2_0_STANDARD_ROLE_TYPES.contains(parent)
+		if ((!TaggedPDFHelper.getPdf17StandardRoleTypes().contains(parent)
+		     && !TaggedPDFHelper.getPdf20StandardRoleTypes().contains(parent)
 		     && !parent.equals(HN)
 		     && !parent.equals(STRUCT_TREE_ROOT))
 		    ||
-		    (!PDF_1_7_STANDARD_ROLE_TYPES.contains(child)
-		     && !PDF_2_0_STANDARD_ROLE_TYPES.contains(child)
+		    (!TaggedPDFHelper.getPdf17StandardRoleTypes().contains(child)
+		     && !TaggedPDFHelper.getPdf20StandardRoleTypes().contains(child)
 		     && !child.matches(HN)
 		     && !child.equals(CONTENT_ITEM))) {
 			System.err.println("Invalid relation " + relation.getDescriptionString());
@@ -186,8 +114,8 @@ public class StructureRuleCreator {
 			return true;
 		}
 
-		return (PDF_1_7_STANDARD_ROLE_TYPES.contains(parent) || parent.equals(HN) || parent.equals(STRUCT_TREE_ROOT))
-		       && (PDF_1_7_STANDARD_ROLE_TYPES.contains(child) || child.equals(HN) || child.equals(CONTENT_ITEM));
+		return (TaggedPDFHelper.getPdf17StandardRoleTypes().contains(parent) || parent.equals(HN) || parent.equals(STRUCT_TREE_ROOT))
+		       && (TaggedPDFHelper.getPdf17StandardRoleTypes().contains(child) || child.equals(HN) || child.equals(CONTENT_ITEM));
 	}
 
 	private RuleData getRuleData(ParsedRelationStructure rel) {
@@ -198,6 +126,8 @@ public class StructureRuleCreator {
 				return constructAtLeastOne(rel);
 			case ZERO_OR_ONE:
 				return constructZeroOrOne(rel);
+			case ONE:
+				return constructOne(rel);
 			case FORBIDDEN_FOR_NON_GROUPING_CHILD:
 			case DEPENDS_ON_STRUCTURE:
 			case RUBY:
@@ -233,6 +163,29 @@ public class StructureRuleCreator {
 		return new RuleData(testObj, childTest,
 		                    String.format(ZERO_OR_ONE_DESCRIPTION_FORMAT, parent, child),
 		                    String.format(ZERO_OR_ONE_ERROR_FORMAT, parent, child));
+	}
+
+	private RuleData constructOne(ParsedRelationStructure rel) {
+		String child = rel.getChild();
+		if (child.equals(CONTENT_ITEM)) {
+			return null;
+		}
+
+		String childTest = constructChildElemAmountPart(child) + " == 1";
+		String testObj;
+
+		String parent = rel.getParent();
+		switch (parent) {
+			case STRUCT_TREE_ROOT:
+				testObj = STRUCT_TREE_ROOT_OBJECT;
+				break;
+			default:
+				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
+		}
+
+		return new RuleData(testObj, childTest,
+				String.format(ONE_DESCRIPTION_FORMAT, parent, child),
+				String.format(ONE_ERROR_FORMAT, parent, child));
 	}
 
 	private RuleData constructAtLeastOne(ParsedRelationStructure rel) {
