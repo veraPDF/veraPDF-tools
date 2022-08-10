@@ -15,8 +15,9 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>pdf-decode-streams</module>
+        <module>generation-json-from-profile</module>
         <module>pdf-decode-fonts</module>
+        <module>pdf-decode-streams</module>
         <module>pdf-deprecated-finder</module>
         <module>pdf-stream-change</module>
         <module>pdf-stream-dump</module>
