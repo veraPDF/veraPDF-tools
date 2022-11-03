@@ -4,6 +4,7 @@ import org.verapdf.report.XsltTransformer;
 
 import javax.xml.transform.TransformerException;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -99,7 +100,6 @@ final class CliProcessor {
 			System.out.println(out.getAbsolutePath());
 			os = new FileOutputStream(out);
 		}
-		XsltTransformer.transform(source, xsltIS,
-				os, arguments);
+		XsltTransformer.transform(source, xsltIS, new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)), arguments);
 	}
 }

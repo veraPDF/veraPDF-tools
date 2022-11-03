@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>fix-metadata</module>
         <module>generation-json-from-profile</module>
         <module>pdf-decode-fonts</module>
         <module>pdf-decode-streams</module>
