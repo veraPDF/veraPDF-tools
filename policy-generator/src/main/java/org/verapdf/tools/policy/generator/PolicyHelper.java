@@ -58,7 +58,7 @@ public class PolicyHelper {
     public static final String LOGS = "\n" +
             "        <sch:rule context=\"/report/jobs/job/logs/logMessage\">\n" +
             "            <sch:assert test='";
-    public static final String LOG = "(contains(/, \"{logToBeReplaced}\") and @occurrences = \"{occurrencesToBeReplaced}\" and @level = \"{levelToBeReplaced}\")";
+    public static final String LOG = "(contains(., \"{logToBeReplaced}\") and @occurrences = \"{occurrencesToBeReplaced}\" and @level = \"{levelToBeReplaced}\")";
     public static final String LOG_MESSAGE = "'{levelToBeReplaced}: {logToBeReplaced}' with {occurrencesToBeReplaced} occurrences";
 
     static final String LOGS_END = "'>Invalid logs, Expected: \n" +
