@@ -261,7 +261,8 @@ public class PolicyGenerator {
                     String occurrencesToBeReplaced = node.getAttributes().getNamedItem("occurrences").getNodeValue();
                     String levelToBeReplaced = node.getAttributes().getNamedItem("level").getNodeValue();
                     content.append(PolicyHelper.LOG
-                            .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;"))
+                            .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;")
+                                    .replace(shortFilePath, ".pdf"))
                             .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
                             .replace("{levelToBeReplaced}", levelToBeReplaced));
 

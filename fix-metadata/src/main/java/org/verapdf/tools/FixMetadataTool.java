@@ -81,8 +81,8 @@ public class FixMetadataTool {
         try (InputStream newXMPData = FixMetadataTool.class.getClassLoader().getResourceAsStream(resourceName)) {
             Scanner s = new Scanner(newXMPData).useDelimiter("\\A");
             String meta = s.hasNext() ? s.next() : "";
-            meta = meta.replace("CREATION_DATE", DateConverter.toPDFFormat(creationDate));
-            meta = meta.replace("MOD_DATE", DateConverter.toPDFFormat(time));
+            meta = meta.replace("CREATION_DATE", DateConverter.toXMPDateFormat(creationDate));
+            meta = meta.replace("MOD_DATE", DateConverter.toXMPDateFormat(time));
             if (flavour != PDFAFlavour.PDFUA_1) {
                 meta = meta.replace("FLAVOUR_PART", String.valueOf(flavour.getPart().getPartNumber()));
                 meta = meta.replace("FLAVOUR_LEVEL", PDFAFlavour.PDFA_4 != flavour ?
