@@ -10,7 +10,7 @@ public class PolicyHelper {
             "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
             "    <!-- File: {fileNameToBeReplaced} -->\n" +
             "\n" +
-            "    <sch:pattern>name = \"Checking the validationReport: profile\"\n" +
+            "    <sch:pattern name = \"Checking the validationReport: profile\">\n" +
             "        <sch:rule context=\"/report/jobs/job/validationReport\">\n" +
             "            <sch:assert test=\"(@isCompliant = 'true')\">Failed check, Expected: isCompliant=true</sch:assert>\n" +
             "        </sch:rule>\n" +
@@ -25,13 +25,13 @@ public class PolicyHelper {
             "    <!-- File: {fileNameToBeReplaced} -->\n" +
             "\n" +
             "\n" +
-            "    <sch:pattern>name = \"Checking the validationReport: document is not compliant\"\n" +
+            "    <sch:pattern name = \"Checking the validationReport: document is not compliant\">\n" +
             "        <sch:rule context=\"/report/jobs/job/validationReport\">\n" +
             "            <sch:assert test=\"(@isCompliant = 'false')\">Failed check, Expected: isCompliant=false</sch:assert>\n" +
             "        </sch:rule>\n" +
             "    </sch:pattern>\n" +
             "\n" +
-            "    <sch:pattern>name = \"Checking the validationReport: rules\"\n" +
+            "    <sch:pattern name = \"Checking the validationReport: rules\">\n" +
             "        <sch:rule context=\"/report/jobs/job/validationReport/details\">\n" +
             "            <sch:assert test=\"(@failedRules = '{failedRulesToBeReplaced}')\">Failed check, Expected: {failedRulesToBeReplaced}</sch:assert>\t\n" +
             "        </sch:rule>\n" +
@@ -47,11 +47,15 @@ public class PolicyHelper {
             "\n" +
             "    </sch:pattern>\n";
     public static final String LOGS_REPORT = "\n" +
-            "    <sch:pattern>name = \"Checking the logs\"\n" +
+            "    <sch:pattern name = \"Checking the logs\">\n" +
+            "        <sch:rule context=\"/report/jobs/job\">\n" +
+            "            <sch:assert test=\"count(logs) = 1\">Failed check, Expected: contains logs</sch:assert>\n" +
+            "        </sch:rule>\n" +
+            "\n" +
             "        <sch:rule context=\"/report/jobs/job/logs\">\n" +
             "            <sch:assert test=\"@logsCount = '{logsCountToBeReplaced}'\">Failed check, Expected: {logsCountToBeReplaced}</sch:assert>\t\n" +
             "        </sch:rule>\n";
-    public static final String NO_LOGS = "\n    <sch:pattern>name = \"Checking for the absence of logs\"\n" +
+    public static final String NO_LOGS = "\n    <sch:pattern name = \"Checking for the absence of logs\">\n" +
             "        <sch:rule context=\"/report/jobs/job\">\n" +
             "            <sch:assert test=\"not(logs)\">Failed check, Expected: no logs</sch:assert>\n" +
             "        </sch:rule>\n";
@@ -74,7 +78,7 @@ public class PolicyHelper {
             "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
             "    <!-- File: {fileNameToBeReplaced} -->\n" +
             "\n" +
-            "    <sch:pattern>name = \"Checking the taskResult\"\n" +
+            "    <sch:pattern name = \"Checking the taskResult\">\n" +
             "        <sch:rule context=\"/report/jobs/job/taskResult\">\n" +
             "            <sch:assert test='contains(exceptionMessage, \"{exceptionMessageToBeReplaced}\")'>\n" +
             "                Failed check, Expected Error: {exceptionToBeReplaced}\n" +
@@ -82,7 +86,7 @@ public class PolicyHelper {
             "        </sch:rule>\n" +
             "    </sch:pattern>\n" +
             "\n" +
-            "    <sch:pattern>name = \"Checking the batchSummary\"\n" +
+            "    <sch:pattern name = \"Checking the batchSummary\">\n" +
             "        <sch:rule context=\"/report/batchSummary\">\n" +
             "            <sch:assert test=\"(@totalJobs = '{totalJobsToBeReplaced}' and @failedToParse = '{failedToParseToBeReplaced}' " +
             "and @encrypted = '{encryptedToBeReplaced}' and @outOfMemory = '{outOfMemoryToBeReplaced}' and @veraExceptions = '{veraExceptionsToBeReplaced}')\">\n" +

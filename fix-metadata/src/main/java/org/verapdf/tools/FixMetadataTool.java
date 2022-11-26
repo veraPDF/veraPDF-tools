@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.verapdf.metadata.fixer.gf.utils.DateConverter;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
+import org.verapdf.xmp.XMPDateTimeFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -81,8 +82,9 @@ public class FixMetadataTool {
         try (InputStream newXMPData = FixMetadataTool.class.getClassLoader().getResourceAsStream(resourceName)) {
             Scanner s = new Scanner(newXMPData).useDelimiter("\\A");
             String meta = s.hasNext() ? s.next() : "";
-            meta = meta.replace("CREATION_DATE", DateConverter.toXMPDateFormat(creationDate));
-            meta = meta.replace("MOD_DATE", DateConverter.toXMPDateFormat(time));
+            meta = meta.replace("CREATION_DATE", getXMPDate(creationDate));
+            meta = meta.replace("MOD_DATE", getXMPDate(time));
+
             if (flavour != PDFAFlavour.PDFUA_1) {
                 meta = meta.replace("FLAVOUR_PART", String.valueOf(flavour.getPart().getPartNumber()));
                 meta = meta.replace("FLAVOUR_LEVEL", PDFAFlavour.PDFA_4 != flavour ?
@@ -93,5 +95,9 @@ public class FixMetadataTool {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getXMPDate(Calendar date) {
+        return XMPDateTimeFactory.createFromCalendar(DateConverter.toCalendar(DateConverter.toPDFDateFormat(date))).getISO8601String();
     }
 }
