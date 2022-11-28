@@ -26,9 +26,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.util.stream.Collectors.toList;
 
 public class PolicyGenerator {
     private static final String HELP = "[options] <FILE>\n Options:";
@@ -59,31 +62,33 @@ public class PolicyGenerator {
 
         try {
             PolicyGenerator generator = new PolicyGenerator();
-            if (commandLine.hasOption("n")) {
-                generator.isLogsEnabled = false;
-            }
-            if (commandLine.hasOption("p")) {
-                String profilePath = commandLine.getOptionValue("profile");
-                if (profilePath != null) {
-                    try (InputStream is = new FileInputStream(Paths.get(profilePath).toFile())) {
-                        generator.customProfile = Profiles.profileFromXml(is);
-                    } catch (JAXBException | FileNotFoundException e) {
-                        generator.customProfile = null;
-                        logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
             if (commandLine.getArgs().length < 1) {
                 formatter.printHelp(HELP, options);
                 return;
             }
+            if (commandLine.hasOption("n")) {
+                generator.isLogsEnabled = false;
+            }
             generator.fileName = String.join(" ", commandLine.getArgs());
-
-            generator.validate();
+            if (commandLine.hasOption("v")) {
+                generator.validate(commandLine.getOptionValue("v"), commandLine.getOptionValue("profile"));
+            } else {
+                if (commandLine.hasOption("p")) {
+                    String profilePath = commandLine.getOptionValue("profile");
+                    if (profilePath != null) {
+                        try (InputStream is = new FileInputStream(Paths.get(profilePath).toFile())) {
+                            generator.customProfile = Profiles.profileFromXml(is);
+                        } catch (JAXBException | FileNotFoundException e) {
+                            generator.customProfile = null;
+                            logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                generator.validate();
+            }
             generator.generate();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,7 +102,48 @@ public class PolicyGenerator {
         Option profile = new Option("p", "profile", true, "Specifies path to custom profile");
         profile.setRequired(false);
         options.addOption(profile);
+        Option verapdfPath = new Option("v", "verapdf_path", true, "path to verapdf");
+        verapdfPath.setRequired(false);
+        options.addOption(verapdfPath);
         return options;
+    }
+
+    private void validate(String verapdfPath, String profilePath) throws IOException {
+        List<String> command = new LinkedList<>();
+        List<String> veraPDFParameters = new LinkedList<>();
+        if (isLogsEnabled) {
+            veraPDFParameters.add("--addlogs");
+        }
+        if (profilePath != null) {
+            veraPDFParameters.add("--profile");
+            veraPDFParameters.add(profilePath);
+        }
+
+        File tempMrrFile = File.createTempFile("veraPDF", ".mrr");
+        tempMrrFile.deleteOnExit();
+        veraPDFParameters.add("1>" + tempMrrFile.getAbsolutePath());
+        command.add(verapdfPath);
+        command.addAll(veraPDFParameters);
+        command.add(fileName);
+
+        command = command.stream().map(parameter -> {
+            if (parameter.isEmpty()) {
+                return "\"\"";
+            }
+            return parameter;
+        }).collect(toList());
+
+        try {
+            ProcessBuilder pb = new ProcessBuilder();
+            pb.command(command);
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            Process process = pb.start();
+            process.waitFor();
+            report = new FileInputStream(tempMrrFile);
+        } catch (IOException | InterruptedException exception) {
+            exception.printStackTrace();
+        }
     }
 
     private void validate() throws IOException {

@@ -10,16 +10,14 @@ import org.verapdf.xmp.XMPDateTimeFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Scanner;
-import java.util.TimeZone;
+import java.util.*;
 
 public class FixMetadataTool {
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
-            System.out.println("arguments: inputFile outputFile flavourId");
+            System.out.println("arguments: inputFile outputFile flavourId/xmpFileName");
             System.out.println("possible flavourIds: " +
                     Arrays.toString(PDFAFlavour.values())
                             .replaceFirst("0, ", "")
@@ -27,12 +25,17 @@ public class FixMetadataTool {
             return;
         }
         PDDocument pdDocument = PDDocument.load(new File(args[0]));
-        PDDocumentInformation pdInfo = pdDocument.getDocumentInformation();
-        Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        setInfoEntries(pdInfo, time);
         PDFAFlavour flavour = PDFAFlavour.byFlavourId(args[2]);
-        setDocumentVersion(pdDocument, flavour);
-        setMetadata(pdDocument, flavour, pdInfo.getCreationDate(), time);
+        if (flavour == PDFAFlavour.NO_FLAVOUR) {
+            PDMetadata newMetadata = new PDMetadata(pdDocument, new FileInputStream(args[2]));
+            pdDocument.getDocumentCatalog().setMetadata(newMetadata);
+        } else {
+            PDDocumentInformation pdInfo = pdDocument.getDocumentInformation();
+            Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            setInfoEntries(pdInfo, time);
+            setDocumentVersion(pdDocument, flavour);
+            setMetadata(pdDocument, flavour, pdInfo.getCreationDate(), time);
+        }
         pdDocument.save(args[1]);
         pdDocument.close();
     }
