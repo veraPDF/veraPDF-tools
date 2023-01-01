@@ -1,7 +1,6 @@
 package org.verapdf.tools;
 
 import com.github.jaiimageio.jpeg2000.J2KImageWriteParam;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -30,7 +29,7 @@ public class JpegFilesGenerationApplication {
 		BufferedImage image = ImageIO.read(new File(args[0]));
 
 		File myFile = new File(args[1]);
-		PDDocument doc = Loader.loadPDF(myFile);
+		PDDocument doc = PDDocument.load(myFile);
 
 		PDPage page = doc.getPage(0);
 		PDPageContentStream contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND,

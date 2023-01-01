@@ -17,6 +17,7 @@
     <modules>
         <module>fix-metadata</module>
         <module>generation-json-from-profile</module>
+        <module>jpeg-files-generation</module>
         <module>outlines-editor</module>
         <module>pdf-decode-fonts</module>
         <module>pdf-decode-streams</module>
