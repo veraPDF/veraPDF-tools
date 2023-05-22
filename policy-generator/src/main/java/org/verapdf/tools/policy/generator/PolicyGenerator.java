@@ -152,11 +152,11 @@ public class PolicyGenerator {
         ProcessorConfig processorConfig = this.customProfile == null
                 ? ProcessorFactory.fromValues(
                 ValidatorFactory.createConfig(PDFAFlavour.NO_FLAVOUR, PDFAFlavour.PDFA_1_B, true,
-                        0, false, isLogsEnabled, Level.WARNING, BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS, false, "", false),
+                        0, false, isLogsEnabled, Level.WARNING, BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS, false, "", false, false),
                 null, null, fixConf, EnumSet.of(TaskType.VALIDATE), (String) null)
                 : ProcessorFactory.fromValues(ValidatorFactory.createConfig(PDFAFlavour.NO_FLAVOUR,
                 PDFAFlavour.NO_FLAVOUR, true, 0, false, isLogsEnabled, Level.WARNING,
-                BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS, false, "", false),
+                BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS, false, "", false, false),
                 null, null, fixConf, EnumSet.of(TaskType.VALIDATE), this.customProfile, null);
 
         BatchProcessor processor = ProcessorFactory.fileBatchProcessor(processorConfig);
