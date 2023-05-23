@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>corpus-wiki-generation</module>
         <module>fix-metadata</module>
         <module>generation-json-from-profile</module>
         <module>jpeg-files-generation</module>
