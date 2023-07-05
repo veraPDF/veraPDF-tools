@@ -78,8 +78,8 @@ public class PolicyHelper {
             "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
             "    <!-- File: {fileNameToBeReplaced} -->\n" +
             "\n" +
-            "    <sch:pattern name = \"Checking the taskResult\">\n" +
-            "        <sch:rule context=\"/report/jobs/job/taskResult\">\n" +
+            "    <sch:pattern name = \"Checking the taskException\">\n" +
+            "        <sch:rule context=\"/report/jobs/job/taskException\">\n" +
             "            <sch:assert test='contains(exceptionMessage, \"{exceptionMessageToBeReplaced}\")'>\n" +
             "                Failed check, Expected Error: {exceptionToBeReplaced}\n" +
             "            </sch:assert>\n" +
