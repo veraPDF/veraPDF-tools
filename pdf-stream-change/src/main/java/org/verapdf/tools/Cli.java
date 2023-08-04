@@ -5,6 +5,7 @@ import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.*;
+import java.util.Map;
 
 /**
  * @author Maxim Plushchov
@@ -25,15 +26,25 @@ public class Cli {
 		String textFileName = args[2];
 		Integer objectNumber = Integer.decode(args[3]);
 		PDDocument document = PDDocument.load(new File(pdfFileName));
-		COSObject object = document.getDocument().getObjectFromPool(new COSObjectKey(objectNumber, 0));
+		COSObjectKey key = new COSObjectKey(objectNumber, 0);
+		COSObject object = document.getDocument().getObjectFromPool(key);
 		if (object == null) {
 			System.out.println("Object with number " + objectNumber + " not found.");
 			return;
 		}
 		COSBase base = object.getObject();
-		if (!(base instanceof COSStream)) {
+		if (!(base instanceof COSDictionary)) {
 			System.out.println("Object with number " + objectNumber + " not a stream.");
 			return;
+		}
+		if (!(base instanceof COSStream)) {
+			COSStream newBase = new COSStream();
+			for (Map.Entry<COSName, COSBase> entry : ((COSDictionary)base).entrySet()) {
+				newBase.setItem(entry.getKey(), entry.getValue());
+			}
+			base = newBase;
+			object.setObject(base);
+			System.out.println("Stream added to dictionary " + objectNumber + ".");
 		}
 		COSStream stream = (COSStream)base;
 		if (READ.equals(args[0])) {
