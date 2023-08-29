@@ -24,10 +24,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -217,25 +214,29 @@ public class PolicyGenerator {
         nodeList = document.getElementsByTagName("rule");
         int size = nodeList.getLength();
         StringBuilder messageToBeReplaced = new StringBuilder();
+        SortedSet<RuleInfo> ruleInfoSet = new TreeSet<>();
         for (int i = 0; i < size; ++i) {
             NamedNodeMap node = nodeList.item(i).getAttributes();
-            String ruleToBeReplaced = node.getNamedItem("clause").getNodeValue();
-            String testNumToBeReplaced = node.getNamedItem("testNumber").getNodeValue();
-            String failedChecksCountToBeReplaced = node.getNamedItem("failedChecks").getNodeValue();
-
+            ruleInfoSet.add(new RuleInfo(node.getNamedItem("clause").getNodeValue(),
+                    Integer.parseInt(node.getNamedItem("testNumber").getNodeValue()),
+                    Integer.parseInt(node.getNamedItem("failedChecks").getNodeValue())));
+        }
+        Iterator<RuleInfo> iterator = ruleInfoSet.iterator();
+        while (iterator.hasNext()) {
+            RuleInfo ruleInfo = iterator.next();
             content.append(PolicyHelper.RULE
-                    .replace("{ruleToBeReplaced}", ruleToBeReplaced)
-                    .replace("{testNumToBeReplaced}", testNumToBeReplaced)
-                    .replace("{failedChecksCountToBeReplaced}", failedChecksCountToBeReplaced));
+                    .replace("{ruleToBeReplaced}", ruleInfo.getRuleId().getClause())
+                    .replace("{testNumToBeReplaced}", String.valueOf(ruleInfo.getRuleId().getTestNumber()))
+                    .replace("{failedChecksCountToBeReplaced}", String.valueOf(ruleInfo.getFailedChecks())));
 
             messageToBeReplaced.append(PolicyHelper.RULE_MESSAGE
-                    .replace("{ruleToBeReplaced}", ruleToBeReplaced)
-                    .replace("{testNumToBeReplaced}", testNumToBeReplaced)
-                    .replace("{failedChecksCountToBeReplaced}", failedChecksCountToBeReplaced));
-            if (Integer.parseInt(failedChecksCountToBeReplaced) > 1) {
+                    .replace("{ruleToBeReplaced}",  ruleInfo.getRuleId().getClause())
+                    .replace("{testNumToBeReplaced}", String.valueOf(ruleInfo.getRuleId().getTestNumber()))
+                    .replace("{failedChecksCountToBeReplaced}", String.valueOf(ruleInfo.getFailedChecks())));
+            if (ruleInfo.getFailedChecks() > 1) {
                 messageToBeReplaced.append("s");
             }
-            if (i != size - 1) {
+            if (iterator.hasNext()) {
                 content.append(PolicyHelper.OR);
                 messageToBeReplaced.append(",").append(PolicyHelper.OR);
             }
@@ -298,26 +299,31 @@ public class PolicyGenerator {
             if (size > 0) {
                 content.append(PolicyHelper.LOGS);
                 StringBuilder messageToBeReplaced = new StringBuilder();
+                SortedSet<LogInfo> logInfoSet = new TreeSet<>();
                 for (int i = 0; i < size; ++i) {
                     Node node = nodeList.item(i);
-                    String logToBeReplaced = node.getFirstChild().getNodeValue()
-                            .replace("&", "&amp;")
-                            .replace("<", "&lt;")
-                            .replace(">", "&gt;");
-                    String occurrencesToBeReplaced = node.getAttributes().getNamedItem("occurrences").getNodeValue();
-                    String levelToBeReplaced = node.getAttributes().getNamedItem("level").getNodeValue();
+                    logInfoSet.add(new LogInfo(Level.parse(node.getAttributes().getNamedItem("level").getNodeValue()),
+                            node.getFirstChild().getNodeValue()
+                                    .replace("&", "&amp;")
+                                    .replace("<", "&lt;")
+                                    .replace(">", "&gt;"),
+                            Integer.parseInt(node.getAttributes().getNamedItem("occurrences").getNodeValue())));
+                }
+                Iterator<LogInfo> iterator = logInfoSet.iterator();
+                while (iterator.hasNext()) {
+                    LogInfo logInfo = iterator.next();
                     content.append(PolicyHelper.LOG
-                            .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;")
+                            .replace("{logToBeReplaced}", logInfo.getMessage().replace("'", "&apos;")
                                     .replace(shortFilePath, ".pdf"))
-                            .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
-                            .replace("{levelToBeReplaced}", levelToBeReplaced));
+                            .replace("{occurrencesToBeReplaced}", String.valueOf(logInfo.getOccurrences()))
+                            .replace("{levelToBeReplaced}", logInfo.getLevel().getName()));
 
                     messageToBeReplaced.append(PolicyHelper.LOG_MESSAGE
-                            .replace("{logToBeReplaced}", logToBeReplaced)
-                            .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
-                            .replace("{levelToBeReplaced}", levelToBeReplaced));
+                            .replace("{logToBeReplaced}", logInfo.getMessage())
+                            .replace("{occurrencesToBeReplaced}", String.valueOf(logInfo.getOccurrences()))
+                            .replace("{levelToBeReplaced}", logInfo.getLevel().getName()));
 
-                    if (i != size - 1) {
+                    if (iterator.hasNext()) {
                         content.append(PolicyHelper.OR);
                         messageToBeReplaced.append(",").append(PolicyHelper.OR);
                     }
