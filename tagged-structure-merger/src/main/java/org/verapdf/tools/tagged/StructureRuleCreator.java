@@ -65,6 +65,7 @@ public class StructureRuleCreator {
 				Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex_L", ++testNumber),
 				"SENonStandard",
 				false,
+				null,
 				"Every structure element should be mapped to a standard structure type",
 				"false",
 				Profiles.errorFromValues("Structure element is not mapped to the standard structure type",
@@ -79,7 +80,7 @@ public class StructureRuleCreator {
 				}
 				RuleId id = Profiles.ruleIdFromValues(this.flavour.getPart(), "Annex_L", ++testNumber);
 				ErrorDetails error = Profiles.errorFromValues(data.errorMessage, Collections.emptyList());
-				res.add(Profiles.ruleFromValues(id, data.object, false, data.description,
+				res.add(Profiles.ruleFromValues(id, data.object, false, null, data.description,
 				                                data.test, error, annex_l_reference));
 			}
 		}
