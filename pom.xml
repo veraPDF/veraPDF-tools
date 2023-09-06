@@ -29,6 +29,7 @@
         <module>preforma-classification</module>
         <module>profiles-wiki-generation</module>
         <module>tagged-structure-merger</module>
+        <module>verapdf-examples</module>
         <module>veraPDF-parsers-performance</module>
     </modules>
 
