@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  build:
+    name: Checkout and Build
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: JDK setup
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: maven
+      - name: Generate wiki files
+        run: |
+              cd corpus-wiki-generation
+              mkdir output
+              java -jar corpus-wiki-generator-1.0-SNAPSHOT.jar
+          
+      - name: Commit to veraPDF-corpus.wiki
+        uses: drud/action-cross-commit@master
+        with:
+          source-folder: corpus-wiki-generation/output
+          destination-repository: https://veraPDF:${{ secrets.WORKFLOW_TOKEN }}@github.com/veraPDF/veraPDF-corpus.wiki
+          destination-folder: .
+          destination-branch: master
+          git-user: "Git User"
+          git-commit-message: "Update veraPDF-corpus wiki"
+          git-commit-sign-off: "false"
+          excludes: .git:Home.md:Undefined.md:ISO 32000 1.md:ISO 32000 2.md:TWG test files.md
