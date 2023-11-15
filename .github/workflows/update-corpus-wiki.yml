@@ -1,4 +1,4 @@
-name: Update verapdf corpus wiki
+name: Update veraPDF corpus wiki
 
 on:
   workflow_dispatch:
@@ -23,7 +23,6 @@ jobs:
       - name: Generate wiki files
         run: |
               cd corpus-wiki-generation
-              mkdir output
               java -jar corpus-wiki-generator-1.0-SNAPSHOT.jar
           
       - name: Commit to veraPDF-corpus.wiki
@@ -36,4 +35,4 @@ jobs:
           git-user: "Git User"
           git-commit-message: "Update veraPDF-corpus wiki"
           git-commit-sign-off: "false"
-          excludes: .git:Home.md:Undefined.md:ISO 32000 1.md:ISO 32000 2.md:TWG test files.md
+          excludes: .git:Home.md:Undefined-test-corpus.md:ISO32000-1-test-corpus.md:ISO32000-2-test-corpus.md:TWGtestfiles-test-corpus.md

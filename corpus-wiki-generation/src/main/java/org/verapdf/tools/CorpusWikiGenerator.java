@@ -28,6 +28,7 @@ public class CorpusWikiGenerator {
 
 	public static void main(String[] args) throws IOException {
 		writer = new PrintWriter(new FileOutputStream("test.md"));
+		new File("output").mkdirs();
 		File zipFile;
 		try {
 			zipFile = CorpusDownload.createTempFileFromCorpus(URI.create(veraUrl).toURL(), "corpusWiki");
@@ -75,10 +76,14 @@ public class CorpusWikiGenerator {
 			corpusPart = directoryName;
 			writer.flush();
 			writer.close();
-			writer = new PrintWriter(new FileOutputStream("output/" + directoryName + ".md"));
+			writer = new PrintWriter(new FileOutputStream("output/" + getWikiFileName(directoryName)));
 		} else {
 			printHeading(directoryName, headingLevel);
 		}
+	}
+	
+	private static String getWikiFileName(String directoryName) {
+		return directoryName.replace(" ", "").replace("_", "") + "-test-corpus.md";
 	}
 
 	private static void printHeading(String directoryName, int headingLevel) {
