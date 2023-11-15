@@ -75,7 +75,7 @@ public class CorpusWikiGenerator {
 			corpusPart = directoryName;
 			writer.flush();
 			writer.close();
-			writer = new PrintWriter(new FileOutputStream(directoryName + ".md"));
+			writer = new PrintWriter(new FileOutputStream("output/" + directoryName + ".md"));
 		} else {
 			printHeading(directoryName, headingLevel);
 		}
@@ -133,7 +133,7 @@ public class CorpusWikiGenerator {
 				messages[i] = messages[i].substring(2);
 			}
 			if (i == messages.length - 2 || stringStartsWithLabel(messages[i + 1])) {
-				messages[i] = messages[i] + ".";
+				messages[i] += ".";
 				writer.println(messages[i]);
 			} else {
 				writer.print(messages[i] + " ");
@@ -165,9 +165,10 @@ public class CorpusWikiGenerator {
 			if (outlineItem.getTitle() != null && outlineItem.getTitle().length() < 15_000) {
 				String title = outlineItem.getTitle();
 				title = getCorrectMDString(title);
-				title = title.replace("\n", "");
-				if (!title.endsWith(".")) {
-					title = title + ".";
+				title = title.trim();
+				title = title.replace("\n", "").replace("\r", "");
+				if (!title.endsWith(".") && !title.endsWith(":")) {
+					title += ".";
 				}
 				writer.println(title);
 				printChildrenOutlines(outlineItem.getFirst());
@@ -183,7 +184,7 @@ public class CorpusWikiGenerator {
 	private static void printChildrenOutlines(PDOutlineItem outlineItem) {
 		while (outlineItem != null) {
 			if (outlineItem.getTitle() != null) {
-				writer.println(outlineItem.getTitle());
+				writer.println("• " + outlineItem.getTitle());
 			}
 			printChildrenOutlines(outlineItem.getFirst());
 			outlineItem = outlineItem.getNext();
@@ -203,6 +204,7 @@ public class CorpusWikiGenerator {
 		if (string.contains(EXPECTED_MESSAGE) || isPrinted) {
 			String message = string.replace(EXPECTED_MESSAGE, "");
 			if (message.length() < 15_000) {
+				message = getCorrectMDString(message);
 				writer.println(message);
 			}
 			return true;

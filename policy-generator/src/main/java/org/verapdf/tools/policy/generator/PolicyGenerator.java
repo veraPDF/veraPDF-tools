@@ -144,7 +144,7 @@ public class PolicyGenerator {
     }
 
     private void validate() throws IOException {
-        MetadataFixerConfig fixConf = FixerFactory.configFromValues("test", true);
+        MetadataFixerConfig fixConf = FixerFactory.configFromValues("test");
 
         ProcessorConfig processorConfig = this.customProfile == null
                 ? ProcessorFactory.fromValues(
