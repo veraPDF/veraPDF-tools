@@ -1,4 +1,4 @@
-name: Test
+name: Update verapdf corpus wiki
 
 on:
   workflow_dispatch:
