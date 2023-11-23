@@ -1,0 +1,51 @@
+name: Update PDF/A validation profiles
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      commit:
+        required: true
+        description: Commit name
+        type: string
+jobs:
+  build:
+    name: Checkout and Build
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: JDK setup
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: maven
+      - name: Generate profiles
+        run: |
+          cd profile-merger
+          java -jar profile-merger-1.0-SNAPSHOT.jar pdfa
+          
+      - name: Commit to veraPDF-validation-profiles
+        uses: drud/action-cross-commit@master
+        with:
+          source-folder: profile-merger/output
+          destination-repository: https://veraPDF:${{ secrets.WORKFLOW_TOKEN }}@github.com/veraPDF/veraPDF-validation-profiles
+          destination-folder: PDF_A
+          destination-branch: integration
+          git-user: "Git User"
+          git-commit-message: "${{ inputs.commit }}"
+          git-commit-sign-off: "false"
+          excludes: 1a:1b:2a:2b:2u:3a:3b:3u:4:4e:4f     
+          
+      - name: Notify slack if profiles weren't updated
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: C03E3JJGLQL
+          status: FAILED
+          color: danger
