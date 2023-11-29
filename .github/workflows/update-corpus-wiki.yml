@@ -36,3 +36,13 @@ jobs:
           git-commit-message: "Update veraPDF-corpus wiki"
           git-commit-sign-off: "false"
           excludes: .git:Home.md:Undefined-test-corpus.md:ISO32000-1-test-corpus.md:ISO32000-2-test-corpus.md:TWGtestfiles-test-corpus.md
+
+      - name: Notify slack if wiki wasn't updated
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: C03E3JJGLQL
+          status: FAILED
+          color: danger

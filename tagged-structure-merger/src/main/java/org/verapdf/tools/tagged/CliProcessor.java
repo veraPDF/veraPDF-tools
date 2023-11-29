@@ -35,7 +35,7 @@ final class CliProcessor {
 	void process(String csvIn, OutputStream out) throws FileNotFoundException, JAXBException {
 		List<ParsedRelationStructure> relations = parseRelations(csvIn);
 		SortedSet<Rule> rules = new TreeSet<>(new Profiles.RuleComparator());
-		Set<Variable> variables = new HashSet<>();
+		SortedSet<Variable> variables = new TreeSet<>(Comparator.comparing(Variable::getName));
 
 		rules.addAll(ruleCreator.generateRules(relations));
 

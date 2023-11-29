@@ -27,6 +27,7 @@
         <module>pdf-stream-dump</module>
         <module>policy-generator</module>
         <module>preforma-classification</module>
+        <module>profile-merger</module>
         <module>profiles-wiki-generation</module>
         <module>tagged-structure-merger</module>
         <module>verapdf-examples</module>
