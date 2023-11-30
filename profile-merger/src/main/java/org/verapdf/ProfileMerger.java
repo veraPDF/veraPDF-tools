@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -18,11 +19,19 @@ public class ProfileMerger {
 
     private static final String veraUrl = "https://github.com/" + repositoryName + "/veraPDF-validation-profiles/archive/" + 
             branchName + ".zip";
-    private static final String PDFA_FOLDER = "veraPDF-validation-profiles-" + branchName + "/PDF_A/";
-    private static final String PDFUA_FOLDER = "veraPDF-validation-profiles-" + branchName + "/PDF_UA/";
+    private static final String PDFA_FOLDER = "PDF_A/";
+    private static final String PDFUA_FOLDER = "PDF_UA/";
+    private static final String PATH = "veraPDF-validation-profiles-" + branchName + "/";
+    private static final Set<String> excludedPDFUA1Tags = new HashSet<>();
+    static {
+        excludedPDFUA1Tags.add("major");
+        excludedPDFUA1Tags.add("minor");
+        excludedPDFUA1Tags.add("critical");
+        excludedPDFUA1Tags.add("cosmetic");
+        excludedPDFUA1Tags.add("machine");
+    }
 
     public static void main(String[] args) throws IOException {
-        new File("output").mkdirs();
         File zipFile;
         try {
             zipFile = org.verapdf.CorpusDownload.createTempFileFromCorpus(URI.create(veraUrl).toURL(), "validationProfiles");
@@ -39,6 +48,7 @@ public class ProfileMerger {
     }
     
     private static void updatePDFAProfiles(ZipFile zipSource) {
+        new File(PDFA_FOLDER).mkdirs();
         List<RuleId> excludedPDFA3Rules = new ArrayList<>(1);
         excludedPDFA3Rules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_19005_2, "6.8", 5));
         List<RuleId> excludedPDFA4Rules = new ArrayList<>(1);
@@ -57,19 +67,22 @@ public class ProfileMerger {
     }
     
     private static void updatePDFUAProfiles(ZipFile zipSource) {
+        new File(PDFUA_FOLDER).mkdirs();
         generateProfile(zipSource, "PDFUA-1.xml", PDFUA_FOLDER, new String[]{"1"}, new String[]{}, Collections.emptyList());
+        generateProfile(zipSource, "PDFUA-2.xml", PDFUA_FOLDER, new String[]{"2"}, new String[]{}, Collections.emptyList());
         List<RuleId> excludedWCAGRules = new ArrayList<>(1);
-        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5.1", 1));
-        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5.1", 2));
-        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5.1", 3));
-        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5.1", 4));
-        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5.1", 5));
-        generateProfile(zipSource, "WCAG-21-Complete.xml", PDFUA_FOLDER, new String[]{"1"}, new String[]{"WCAG-21.xml"}, excludedWCAGRules);
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 1));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 2));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 3));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 4));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 5));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
+        generateProfile(zipSource, "WCAG-21-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/PDF_UA", "1"}, new String[]{"WCAG-21.xml"}, excludedWCAGRules);
     }
 
     private static void generateProfile(ZipFile zipSource, String generalProfileName, String folder, String[] folders,
                                         String[] includedProfiles, List<RuleId> excludedRules) {
-        String generalProfilePath = folder + generalProfileName;
+        String generalProfilePath = PATH + folder + generalProfileName;
         ValidationProfile validationProfile;
         try (InputStream inputStream = zipSource.getInputStream(zipSource.getEntry(generalProfilePath))) {
             validationProfile = Profiles.profileFromXml(inputStream);
@@ -79,18 +92,18 @@ public class ProfileMerger {
         SortedSet<Rule> rules = new TreeSet<>(new Profiles.RuleComparator());
         SortedSet<Variable> variables = new TreeSet<>(Comparator.comparing(Variable::getName));
         for (String currentFolder : folders) {
-            Set<String> profilesNames = getProfilesNames(folder + currentFolder + "/", zipSource);
+            Set<String> profilesNames = getProfilesNames(PATH + folder + currentFolder + "/", zipSource);
             for (String profilePath : profilesNames) {
                 addRulesFromProfile(generalProfileName, zipSource, profilePath, rules, variables, excludedRules);
             }
         }
 
         for (String profilePath : includedProfiles) {
-            addRulesFromProfile(generalProfileName, zipSource, folder + profilePath, rules, variables, excludedRules);
+            addRulesFromProfile(generalProfileName, zipSource, PATH + folder + profilePath, rules, variables, excludedRules);
         }
         ValidationProfile mergedProfile = Profiles.profileFromSortedValues(validationProfile.getPDFAFlavour(),
                 validationProfile.getDetails(), validationProfile.getHexSha1Digest(), rules, variables);
-        try (OutputStream out = Files.newOutputStream(new File("output/" + generalProfileName).toPath())) {
+        try (OutputStream out = Files.newOutputStream(new File(folder + generalProfileName).toPath())) {
             Profiles.profileToXml(mergedProfile, out, true, false);
         } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
@@ -121,15 +134,22 @@ public class ProfileMerger {
     
     private static void addRules(String generalProfileName, ValidationProfile profile, SortedSet<Rule> rules, 
                                  Set<Variable> variables, List<RuleId> excludedRules) {
+        boolean addRules = false;
         for (Rule rule : profile.getRules()) {
             if (!excludedRules.contains(rule.getRuleId())) {
                 if (generalProfileName.contains("PDFA-3") && rule.getRuleId().getSpecification() == PDFAFlavour.Specification.ISO_19005_2) {
                     rule = updatePDFA2RuleToPDFA3(rule);
                 }
+                if (generalProfileName.contains("PDFUA-1")) {
+                    rule = updatePDFUA1RuleTags(rule);
+                }
                 rules.add(rule);
+                addRules = true;
             }
         }
-        variables.addAll(profile.getVariables());
+        if (addRules) {
+            variables.addAll(profile.getVariables());
+        }
     }
     
     private static Rule updatePDFA2RuleToPDFA3(Rule rule) {
@@ -147,5 +167,11 @@ public class ProfileMerger {
                 .replace("ISO 19005-2", "ISO 19005-3");
         return Profiles.ruleFromValues(ruleId, rule.getObject(), rule.getDeferred(), rule.getTags(), description, 
                 rule.getTest(), rule.getError(), references);
+    }
+
+    private static Rule updatePDFUA1RuleTags(Rule rule) {
+        String tags = Arrays.stream(rule.getTags().split(",")).filter(tag -> !excludedPDFUA1Tags.contains(tag)).collect(Collectors.joining(","));
+        return Profiles.ruleFromValues(rule.getRuleId(), rule.getObject(), rule.getDeferred(), tags, rule.getDescription(),
+                rule.getTest(), rule.getError(), rule.getReferences());
     }
 }
