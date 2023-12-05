@@ -10,7 +10,7 @@ public class PolicyHelper {
             "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
             "    <!-- File: {fileNameToBeReplaced} -->\n" +
             "\n" +
-            "    <sch:pattern name = \"Checking the validationReport: profile\">\n" +
+            "    <sch:pattern name = \"Checking the validationReport: document is compliant\">\n" +
             "        <sch:rule context=\"/report/jobs/job/validationReport\">\n" +
             "            <sch:assert test=\"(@isCompliant = 'true')\">Failed check, Expected: isCompliant=true</sch:assert>\n" +
             "        </sch:rule>\n" +
