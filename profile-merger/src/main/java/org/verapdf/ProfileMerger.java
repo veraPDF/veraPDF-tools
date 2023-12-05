@@ -70,6 +70,7 @@ public class ProfileMerger {
         new File(PDFUA_FOLDER).mkdirs();
         generateProfile(zipSource, "PDFUA-1.xml", PDFUA_FOLDER, new String[]{"1"}, new String[]{}, Collections.emptyList());
         generateProfile(zipSource, "PDFUA-2.xml", PDFUA_FOLDER, new String[]{"2"}, new String[]{}, Collections.emptyList());
+        generateProfile(zipSource, "PDFUA-2-ISO32005.xml", PDFUA_FOLDER, new String[]{"2"}, new String[]{"ISO-32005-Tagged.xml"}, Collections.emptyList());
         List<RuleId> excludedWCAGRules = new ArrayList<>(1);
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 2));
