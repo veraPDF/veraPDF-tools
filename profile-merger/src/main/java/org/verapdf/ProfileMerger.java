@@ -72,13 +72,14 @@ public class ProfileMerger {
         generateProfile(zipSource, "PDFUA-2.xml", PDFUA_FOLDER, new String[]{"2"}, new String[]{}, Collections.emptyList());
         generateProfile(zipSource, "PDFUA-2-ISO32005.xml", PDFUA_FOLDER, new String[]{"2"}, new String[]{"ISO-32005-Tagged.xml"}, Collections.emptyList());
         List<RuleId> excludedWCAGRules = new ArrayList<>(1);
+        generateProfile(zipSource, "WCAG-21.xml", PDFUA_FOLDER, new String[]{"WCAG/2.1"}, new String[]{}, Collections.emptyList());
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 2));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 3));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 4));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 5));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
-        generateProfile(zipSource, "WCAG-21-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/PDF_UA", "1"}, new String[]{"WCAG-21.xml"}, excludedWCAGRules);
+        generateProfile(zipSource, "WCAG-21-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.1", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
     }
 
     private static void generateProfile(ZipFile zipSource, String generalProfileName, String folder, String[] folders,
