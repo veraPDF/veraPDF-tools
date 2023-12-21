@@ -21,6 +21,7 @@ public class CorpusWikiGenerator {
 	private static final String LINK_START = "https://raw.githubusercontent.com/veraPDF/veraPDF-corpus/staging/";
 	private static final String STAGING = "staging";
 	private static final String PDF_UA_1 = "PDF_UA-1";
+	private static final String PDF_UA_2 = "PDF_UA-2";
 	private static final String EXPECTED_MESSAGE = "expected message";
 	private static final String PDF_EXTENSION = ".pdf";
 	private static PrintWriter writer;
@@ -105,7 +106,7 @@ public class CorpusWikiGenerator {
 				if (outlineItem.getTitle() == null) {
 					writer.println(" null title");
 				}
-				if (PDF_UA_1.equals(corpusPart)) {
+				if (PDF_UA_1.equals(corpusPart) || PDF_UA_2.equals(corpusPart)) {
 					printTextFromPDFUAOutlines(outlineItem);
 				} else {
 					printTextFromOutlines(outlineItem);
