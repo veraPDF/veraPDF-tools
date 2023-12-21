@@ -8,8 +8,15 @@ import org.verapdf.pdfa.validation.profiles.RuleId;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RuleSerializer extends StdSerializer<Rules> {
+
+	private static final Logger LOGGER = Logger.getLogger(RuleSerializer.class.getCanonicalName());
+
+	public static String ERROR_ARGUMENT_WARNING = "Error message for rule %s contains error argument";
+
 	protected RuleSerializer(Class<Rules> t) {
 		super(t);
 	}
@@ -38,6 +45,10 @@ public class RuleSerializer extends StdSerializer<Rules> {
 			jsonGenerator.writeFieldName(String.valueOf(id.getTestNumber()));
 			jsonGenerator.writeStartObject();
 			jsonGenerator.writeStringField("SUMMARY", rule.getError().getMessage());
+			if (!rule.getError().getArguments().isEmpty()) {
+				LOGGER.log(Level.WARNING, String.format(ERROR_ARGUMENT_WARNING, rule.getRuleId().getClause() + '-' +
+						rule.getRuleId().getTestNumber()));
+			}
 			jsonGenerator.writeStringField("DESCRIPTION", rule.getDescription());
 			jsonGenerator.writeEndObject();
 			lastRuleId = rule.getRuleId();
