@@ -24,6 +24,7 @@ public class FixMetadataTool {
                             .replace(", wcag2", ""));
             return;
         }
+        File ouputFile = new File(args[1]);
         PDDocument pdDocument = PDDocument.load(new File(args[0]));
         PDFAFlavour flavour = PDFAFlavour.byFlavourId(args[2]);
         if (flavour == PDFAFlavour.NO_FLAVOUR) {
@@ -34,9 +35,9 @@ public class FixMetadataTool {
             Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             setInfoEntries(pdInfo, time);
             setDocumentVersion(pdDocument, flavour);
-            setMetadata(pdDocument, flavour, pdInfo.getCreationDate(), time);
+            setMetadata(pdDocument, ouputFile, flavour, pdInfo.getCreationDate(), time);
         }
-        pdDocument.save(args[1]);
+        pdDocument.save(ouputFile);
         pdDocument.close();
     }
 
@@ -60,6 +61,9 @@ public class FixMetadataTool {
             pdDocument.getDocument().getTrailer().removeItem(COSName.INFO);
             pdDocument.setVersion(2.0f);
             pdDocument.getDocument().setVersion(2.0f);
+        } else if (flavour.getPart() == PDFAFlavour.Specification.ISO_14289_2) {
+            pdDocument.setVersion(2.0f);
+            pdDocument.getDocument().setVersion(2.0f);
         } else if (flavour.getPart() == PDFAFlavour.Specification.ISO_19005_1) {
             pdDocument.getDocument().setVersion(1.4f);
         } else {
@@ -77,10 +81,13 @@ public class FixMetadataTool {
         if (flavour.getPart() == PDFAFlavour.Specification.ISO_14289_1) {
             return "pdf-ua1.xmp";
         }
+        if (flavour.getPart() == PDFAFlavour.Specification.ISO_14289_2) {
+            return "pdf-ua2.xmp";
+        }
         return "pdf-a.xmp";
     }
 
-    private static void setMetadata(PDDocument pdDocument, PDFAFlavour flavour, Calendar creationDate, Calendar time) {
+    private static void setMetadata(PDDocument pdDocument, File file, PDFAFlavour flavour, Calendar creationDate, Calendar time) {
         String resourceName = getResourceName(flavour);
         try (InputStream newXMPData = FixMetadataTool.class.getClassLoader().getResourceAsStream(resourceName)) {
             Scanner s = new Scanner(newXMPData).useDelimiter("\\A");
@@ -88,10 +95,12 @@ public class FixMetadataTool {
             meta = meta.replace("CREATION_DATE", getXMPDate(creationDate));
             meta = meta.replace("MOD_DATE", getXMPDate(time));
 
-            if (flavour != PDFAFlavour.PDFUA_1) {
+            if (flavour != PDFAFlavour.PDFUA_1 && flavour != PDFAFlavour.PDFUA_2) {
                 meta = meta.replace("FLAVOUR_PART", String.valueOf(flavour.getPart().getPartNumber()));
                 meta = meta.replace("FLAVOUR_LEVEL", PDFAFlavour.PDFA_4 != flavour ?
                         "pdfaid:conformance=\"" + flavour.getLevel().getCode().toUpperCase() + "\" " : "");
+            } else {
+                meta = meta.replace("TITLE", file.getName().substring(0, file.getName().length() - 4));
             }
             PDMetadata newMetadata = new PDMetadata(pdDocument, new ByteArrayInputStream(meta.getBytes()));
             pdDocument.getDocumentCatalog().setMetadata(newMetadata);

@@ -1,0 +1,61 @@
+<?xpacket begin="п»ї" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.1.0-jc003">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:Description rdf:about=""
+        xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+        xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+        xmlns:pdfuaid="http://www.aiim.org/pdfua/ns/id/"
+        xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+        xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
+        xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#"
+      xmp:CreateDate="CREATION_DATE"
+      xmp:CreatorTool="veraPDF Test Builder"
+      xmp:ModifyDate="MOD_DATE"
+      xmp:MetadataDate="2020-06-15T11:35:30+03:00"
+      pdf:Producer="veraPDF Test Builder 1.0"
+      dc:format="application/pdf"
+      xmpMM:DocumentID="uuid:cfc4074e-0d19-440d-adde-93105bb7bdfb"
+      xmpMM:InstanceID="uuid:927f2d2d-ed6d-4f28-a33f-4a803ac85a7a"
+      pdfuaid:part="2"
+      pdfuaid:rev="2024">
+      <dc:title>
+        <rdf:Alt>
+          <rdf:li xml:lang="x-default">TITLE</rdf:li>
+        </rdf:Alt>
+      </dc:title>
+      <dc:creator>
+        <rdf:Seq>
+          <rdf:li>veraPDF Consortium</rdf:li>
+        </rdf:Seq>
+      </dc:creator>
+      <pdfaExtension:schemas>
+        <rdf:Bag>
+          <rdf:li>
+            <rdf:Description
+              pdfaSchema:schema="PDF/UA Universal Accessibility Schema"
+              pdfaSchema:namespaceURI="http://www.aiim.org/pdfua/ns/id/"
+              pdfaSchema:prefix="pdfuaid">
+            <pdfaSchema:property>
+              <rdf:Seq>
+                <rdf:li
+                  pdfaProperty:name="part"
+                  pdfaProperty:valueType="Integer"
+                  pdfaProperty:category="internal"
+                  pdfaProperty:description="PDF/UA version identifier"/>
+                <rdf:li
+                  pdfaProperty:name="rev"
+                  pdfaProperty:valueType="Integer"
+                  pdfaProperty:category="internal"
+                  pdfaProperty:description="Four-digit year of the date of publication or revision"/>
+              </rdf:Seq>
+            </pdfaSchema:property>
+            </rdf:Description>
+          </rdf:li>
+        </rdf:Bag>
+      </pdfaExtension:schemas>
+    </rdf:Description>
+  </rdf:RDF>
+</x:xmpmeta>                                                                              
+<?xpacket end="w"?>
