@@ -15,9 +15,12 @@ public class ProfilesWikiGenerator {
     public static String pdfa1_flavour = "PDF/A-1";
     public static String pdfa2_flavour = "PDF/A-2";
     public static String pdfua1_flavour = "PDF/UA-1";
+    public static String pdfua2_flavour = "PDF/UA-2";
     public static String pdfa4_flavour = "PDF/A-4";
     public static String flavour = pdfa4_flavour;
     public static String outputFileName = "wiki_" + flavour.replace("/","") + ".md";
+    
+    public static String ERROR_ARGUMENT_WARNING = "Error message for rule %s contains error argument";
 
     public static void main(String[] args) {
         try (InputStream inputStream = Files.newInputStream(Paths.get(inputFileName));
@@ -27,7 +30,8 @@ public class ProfilesWikiGenerator {
             rules.addAll(profile.getRules());
             out.println("# " + flavour + " validation rules");
             for (Rule rule : rules) {
-                out.println("## Rule " + rule.getRuleId().getClause() + "-" + rule.getRuleId().getTestNumber());
+                String ruleNumber = rule.getRuleId().getClause() + "-" + rule.getRuleId().getTestNumber();
+                out.println("## Rule " + ruleNumber);
                 out.println();
                 out.println("### Requirement");
                 out.println();
@@ -37,6 +41,9 @@ public class ProfilesWikiGenerator {
                 out.println("### Error details");
                 out.println();
                 out.println(rule.getError().getMessage());
+                if (rule.getError().getMessage().contains("%")) {
+                    System.out.printf((ERROR_ARGUMENT_WARNING) + "%n", rule.getRuleId().getClause() + "-" + rule.getRuleId().getTestNumber());
+                }
                 out.println();
                 out.println("* Object type: `" + rule.getObject() + "`");
                 out.println("* Test condition: `" + rule.getTest() + "`");
@@ -82,6 +89,8 @@ public class ProfilesWikiGenerator {
             return "ISO 19005-2:2011, ISO 19005-3:2012";
         } else if (pdfua1_flavour.equals(flavour)) {
             return "ISO 14289-1:2014";
+        } else if (pdfua2_flavour.equals(flavour)) {
+            return "ISO 14289-2:202X";
         }
         return null;
     }
