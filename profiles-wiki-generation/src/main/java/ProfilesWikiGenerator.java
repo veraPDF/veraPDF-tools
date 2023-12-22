@@ -8,8 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProfilesWikiGenerator {
+
+    private static final Logger LOGGER = Logger.getLogger(ProfilesWikiGenerator.class.getCanonicalName());
 
     public static String inputFileName = "PDFA-4.xml";
     public static String pdfa1_flavour = "PDF/A-1";
@@ -41,8 +45,9 @@ public class ProfilesWikiGenerator {
                 out.println("### Error details");
                 out.println();
                 out.println(rule.getError().getMessage());
-                if (rule.getError().getMessage().contains("%")) {
-                    System.out.printf((ERROR_ARGUMENT_WARNING) + "%n", rule.getRuleId().getClause() + "-" + rule.getRuleId().getTestNumber());
+                if (!rule.getError().getArguments().isEmpty()) {
+                    LOGGER.log(Level.WARNING, String.format(ERROR_ARGUMENT_WARNING, rule.getRuleId().getClause() + '-' + 
+                            rule.getRuleId().getTestNumber()));
                 }
                 out.println();
                 out.println("* Object type: `" + rule.getObject() + "`");
