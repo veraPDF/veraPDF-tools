@@ -5,7 +5,7 @@ package org.verapdf.tools.tagged.enums;
  */
 public enum PDFVersion {
 	PDF_1_7("PDF-1.7", "ISO-32000-1"),
-	PDF_2_0("PDF-2.0", "ISO-32000-1");
+	PDF_2_0("PDF-2.0", "ISO-32000-2");
 
 	private String name;
 	private String iso;
