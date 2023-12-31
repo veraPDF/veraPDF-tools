@@ -33,7 +33,7 @@ public class FixMetadataTool {
         } else {
             PDDocumentInformation pdInfo = pdDocument.getDocumentInformation();
             Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            setInfoEntries(pdInfo, time);
+            setInfoEntries(flavour, pdInfo, time);
             setDocumentVersion(pdDocument, flavour);
             setMetadata(pdDocument, ouputFile, flavour, pdInfo.getCreationDate(), time);
         }
@@ -41,10 +41,16 @@ public class FixMetadataTool {
         pdDocument.close();
     }
 
-    private static void setInfoEntries(PDDocumentInformation pdInfo, Calendar time) {
-        pdInfo.setProducer("veraPDF Test Builder 1.0");
-        pdInfo.setCreator("veraPDF Test Builder");
-        pdInfo.setAuthor("veraPDF Consortium");
+    private static void setInfoEntries(PDFAFlavour flavour, PDDocumentInformation pdInfo, Calendar time) {
+        if (flavour == PDFAFlavour.PDFUA_2 || flavour.getPart() == PDFAFlavour.Specification.ISO_19005_4) {
+            pdInfo.setProducer(null);
+            pdInfo.setCreator(null);
+            pdInfo.setAuthor(null);
+        } else {
+            pdInfo.setProducer("veraPDF Test Builder 1.0");
+            pdInfo.setCreator("veraPDF Test Builder");
+            pdInfo.setAuthor("veraPDF Consortium");
+        }
         pdInfo.setKeywords(null);
         pdInfo.setTitle(null);
         pdInfo.setSubject(null);
