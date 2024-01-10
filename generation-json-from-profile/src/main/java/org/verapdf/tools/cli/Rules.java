@@ -1,20 +1,19 @@
 package org.verapdf.tools.cli;
 
+import org.verapdf.pdfa.validation.profiles.Profiles;
 import org.verapdf.pdfa.validation.profiles.Rule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Rules {
-	private final List<Rule> rules;
+	private final SortedSet<Rule> rules;
 		
 	public Rules(Set<Rule> rules) {
-		this.rules = new ArrayList<>(rules);
-		this.rules.sort(new RuleComparator());
+		this.rules = new TreeSet<>(new Profiles.RuleComparator());
+		this.rules.addAll(rules);
 	}
 		
-	public List<Rule> getRules() {
+	public SortedSet<Rule> getRules() {
 			return rules;
 		}
 }
