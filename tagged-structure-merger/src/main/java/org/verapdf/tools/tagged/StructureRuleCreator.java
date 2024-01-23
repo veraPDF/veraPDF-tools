@@ -77,7 +77,7 @@ public class StructureRuleCreator {
 				}
 				RuleId id = Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", ++testNumber);
 				ErrorDetails error = Profiles.errorFromValues(data.errorMessage, Collections.emptyList());
-				res.add(Profiles.ruleFromValues(id, data.object, null, null, data.description,
+				res.add(Profiles.ruleFromValues(id, data.object, null, StructureTag.getTags(relation), data.description,
 				                                data.test, error, annex_l_reference));
 			}
 		}
@@ -87,12 +87,13 @@ public class StructureRuleCreator {
 		res.add(getRuleAboutStructElementParent(annex_l_reference, ++testNumber));
 		return res;
 	}
+	
 	private Rule getRuleAboutNotRemappedNonStandardType(List<Reference> annex_l_reference, int testNumber) {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
 				"SENonStandard",
 				null,
-				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
 				"Every structure type should be mapped to a standard structure type",
 				"isNotMappedToStandardType == false",
 				Profiles.errorFromValues("Non-standard structure type %1 is not mapped to a standard type",
@@ -105,7 +106,7 @@ public class StructureRuleCreator {
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
 				"SENonStandard",
 				null,
-				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
 				"A circular mapping shall not exist",
 				"circularMappingExist != true",
 				Profiles.errorFromValues("A circular mapping exists for %1 structure type",
@@ -118,7 +119,7 @@ public class StructureRuleCreator {
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
 				"SENonStandard",
 				null,
-				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
 				"Standard tags shall not be remapped to a non-standard type",
 				"remappedStandardType == null",
 				Profiles.errorFromValues("The standard structure type %1 is remapped to a non-standard type",
@@ -131,7 +132,7 @@ public class StructureRuleCreator {
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
 				"PDStructElem",
 				null,
-				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
 				"Struct element shall contain the P entry according to ISO 32000-2:2020, 14.7.2, Table 323",
 				"containsParent == true",
 				Profiles.errorFromValues("A struct element does not contain the P entry", Collections.emptyList()),
@@ -143,7 +144,7 @@ public class StructureRuleCreator {
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
 				"PDDocument",
 				null,
-				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
 				"The logical structure of the conforming file shall be described by a structure hierarchy rooted " + 
 						"in the StructTreeRoot entry of the document catalog dictionary, as described in ISO 32000-2:2020, 14.7",
 				"StructTreeRoot_size == 1",
