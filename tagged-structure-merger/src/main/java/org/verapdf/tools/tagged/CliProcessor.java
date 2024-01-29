@@ -1,9 +1,7 @@
 package org.verapdf.tools.tagged;
 
-import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.validation.profiles.*;
 import org.verapdf.tools.tagged.enums.ChildrenRelation;
-import org.verapdf.tools.tagged.enums.PDFVersion;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
