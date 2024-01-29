@@ -133,9 +133,9 @@ public class StructureRuleCreator {
 				"PDStructElem",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
-				"Struct element shall contain the P entry according to ISO 32000-2:2020, 14.7.2, Table 323",
+				"A structure element dictionary shall contain the P (parent) entry according to ISO 32000-2:2020, 14.7.2, Table 323",
 				"containsParent == true",
-				Profiles.errorFromValues("A struct element does not contain the P entry", Collections.emptyList()),
+				Profiles.errorFromValues("A structure element dictionary does not contain the P (parent) entry", Collections.emptyList()),
 				annex_l_reference);
 	}
 
