@@ -21,6 +21,8 @@ public class ProfileMerger {
             branchName + ".zip";
     private static final String PDFA_FOLDER = "PDF_A/";
     private static final String PDFUA_FOLDER = "PDF_UA/";
+    
+    private static final String WCAG_MACHINE_PROFILE_NAME = "WCAG-2-2-Machine.xml";
     private static final String PATH = "veraPDF-validation-profiles-" + branchName + "/";
     private static final Set<String> excludedPDFUA1Tags = new HashSet<>();
     static {
@@ -86,7 +88,7 @@ public class ProfileMerger {
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 5));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
         generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
-        generateProfile(zipSource, "WCAG-2-2-Machine.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
+        generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
     }
 
     private static void generateProfile(ZipFile zipSource, String generalProfileName, String folder, String[] folders,
@@ -152,7 +154,7 @@ public class ProfileMerger {
                 if (generalProfileName.contains("PDFUA-1")) {
                     rule = updatePDFUA1RuleTags(rule);
                 }
-                if (generalProfileName.contains("WCAG-22-Machine") && !rule.getTagsSet().contains("machine")) {
+                if (generalProfileName.contains(WCAG_MACHINE_PROFILE_NAME) && !rule.getTagsSet().contains("machine")) {
                     continue;
                 }
                 rules.add(rule);

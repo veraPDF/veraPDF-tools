@@ -15,7 +15,7 @@
 
         <dependency>
             <groupId>org.verapdf</groupId>
-            <artifactId>validation-model</artifactId>
+            <artifactId>parser</artifactId>
             <version>${verapdf.version}</version>
         </dependency>
 
