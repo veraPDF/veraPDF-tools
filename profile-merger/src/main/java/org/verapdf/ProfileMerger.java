@@ -86,6 +86,7 @@ public class ProfileMerger {
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 3));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 4));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 5));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.4.2", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
         generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
         generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
