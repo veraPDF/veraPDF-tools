@@ -31,35 +31,32 @@ public class FixMetadataTool {
             PDMetadata newMetadata = new PDMetadata(pdDocument, new FileInputStream(args[2]));
             pdDocument.getDocumentCatalog().setMetadata(newMetadata);
         } else {
-            PDDocumentInformation pdInfo = pdDocument.getDocumentInformation();
             Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            setInfoEntries(flavour, pdInfo, time);
+            setInfoEntries(flavour, pdDocument, time);
             setDocumentVersion(pdDocument, flavour);
-            setMetadata(pdDocument, ouputFile, flavour, pdInfo.getCreationDate(), time);
+            setMetadata(pdDocument, ouputFile, flavour, time);
         }
         pdDocument.save(ouputFile);
         pdDocument.close();
     }
 
-    private static void setInfoEntries(PDFAFlavour flavour, PDDocumentInformation pdInfo, Calendar time) {
+    private static void setInfoEntries(PDFAFlavour flavour, PDDocument pdDocument, Calendar time) {
         if (flavour == PDFAFlavour.PDFUA_2 || flavour.getPart() == PDFAFlavour.Specification.ISO_19005_4) {
-            pdInfo.setProducer(null);
-            pdInfo.setCreator(null);
-            pdInfo.setAuthor(null);
+            pdDocument.getDocument().getTrailer().setItem(COSName.INFO, null);
         } else {
+            PDDocumentInformation pdInfo = pdDocument.getDocumentInformation();
             pdInfo.setProducer("veraPDF Test Builder 1.0");
             pdInfo.setCreator("veraPDF Test Builder");
             pdInfo.setAuthor("veraPDF Consortium");
+            pdInfo.setModificationDate(time);
+            Calendar creationDate = pdInfo.getCreationDate();
+            if (creationDate == null) {
+                pdInfo.setCreationDate(time);
+            }
+            pdInfo.setKeywords(null);
+            pdInfo.setTitle(null);
+            pdInfo.setSubject(null);
         }
-        pdInfo.setKeywords(null);
-        pdInfo.setTitle(null);
-        pdInfo.setSubject(null);
-        pdInfo.setModificationDate(time);
-        Calendar creationDate = pdInfo.getCreationDate();
-        if (creationDate == null) {
-            pdInfo.setCreationDate(time);
-        }
-
     }
 
     private static void setDocumentVersion(PDDocument pdDocument, PDFAFlavour flavour) {
@@ -93,12 +90,20 @@ public class FixMetadataTool {
         return "pdf-a.xmp";
     }
 
-    private static void setMetadata(PDDocument pdDocument, File file, PDFAFlavour flavour, Calendar creationDate, Calendar time) {
+    private static void setMetadata(PDDocument pdDocument, File file, PDFAFlavour flavour, Calendar time) {
         String resourceName = getResourceName(flavour);
         try (InputStream newXMPData = FixMetadataTool.class.getClassLoader().getResourceAsStream(resourceName)) {
             Scanner s = new Scanner(newXMPData).useDelimiter("\\A");
             String meta = s.hasNext() ? s.next() : "";
-            meta = meta.replace("CREATION_DATE", getXMPDate(creationDate));
+            Calendar created = null;
+            if (flavour != PDFAFlavour.PDFA_4 && flavour != PDFAFlavour.PDFUA_2) {
+                PDDocumentInformation pdInfo = pdDocument.getDocumentInformation();
+                created = pdInfo != null ? pdInfo.getCreationDate() : null;
+            }
+            if (created == null) {
+                created = time;
+            }
+            meta = meta.replace("CREATION_DATE", getXMPDate(created));
             meta = meta.replace("MOD_DATE", getXMPDate(time));
 
             if (flavour != PDFAFlavour.PDFUA_1 && flavour != PDFAFlavour.PDFUA_2) {
