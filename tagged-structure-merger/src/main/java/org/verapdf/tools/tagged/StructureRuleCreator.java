@@ -44,10 +44,10 @@ public class StructureRuleCreator {
 		this.pdfVersion = pdfVersion;
 		switch (this.pdfVersion) {
 			case PDF_1_7:
-				this.flavour = PDFAFlavour.PDFA_2_U;
+				this.flavour = PDFAFlavour.PDFUA_1;
 				break;
 			case PDF_2_0:
-				this.flavour = PDFAFlavour.PDFA_4;
+				this.flavour = PDFAFlavour.PDFUA_2;
 				break;
 			default:
 				throw new IllegalStateException("Unsupported pdf version");
@@ -85,6 +85,7 @@ public class StructureRuleCreator {
 		res.add(getRuleAboutRemappedStandardType(annex_l_reference, ++testNumber));
 		res.add(getRuleAboutStructTreeRoot(annex_l_reference, ++testNumber));
 		res.add(getRuleAboutStructElementParent(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutMathMLParent(annex_l_reference, ++testNumber));
 		return res;
 	}
 	
@@ -136,6 +137,19 @@ public class StructureRuleCreator {
 				"A structure element dictionary shall contain the P (parent) entry according to ISO 32000-2:2020, 14.7.2, Table 323",
 				"containsParent == true",
 				Profiles.errorFromValues("A structure element dictionary does not contain the P (parent) entry", Collections.emptyList()),
+				annex_l_reference);
+	}
+
+	private Rule getRuleAboutMathMLParent(List<Reference> annex_l_reference, int testNumber) {
+		return Profiles.ruleFromValues(
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				"SEMathMLStructureElement",
+				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
+				"The math structure type shall occur only as a child of a Formula structure element",
+				"parentStandardType == 'Formula' || parentStandardType == 'MathML'",
+				Profiles.errorFromValues("The math structure type is nested within %1 tag instead of Formula", 
+						Collections.singletonList(ErrorArgumentImpl.fromValues("parentStandardType", null, null))),
 				annex_l_reference);
 	}
 
