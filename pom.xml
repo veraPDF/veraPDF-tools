@@ -22,6 +22,7 @@
         <module>outlines-editor</module>
         <module>pdf-decode-fonts</module>
         <module>pdf-decode-streams</module>
+        <module>pdf-deprecated-finder</module>
         <module>pdf-stream-change</module>
         <module>pdf-stream-dump</module>
         <module>policy-generator</module>
