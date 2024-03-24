@@ -21,6 +21,8 @@ public class ProfilesWikiGenerator {
     public static String pdfua1_flavour = "PDF/UA-1";
     public static String pdfua2_flavour = "PDF/UA-2";
     public static String pdfa4_flavour = "PDF/A-4";
+    public static String wcag2_2_flavour = "WCAG2.2";
+
     public static String flavour = pdfa4_flavour;
     public static String outputFileName = "wiki_" + flavour.replace("/","") + ".md";
     
@@ -77,9 +79,11 @@ public class ProfilesWikiGenerator {
     private static String getLevels() {
         if (pdfa4_flavour.equals(flavour)) {
             return "4, 4E, 4F";
-        } else if (pdfa1_flavour.equals(flavour)) {
+        }
+        if (pdfa1_flavour.equals(flavour)) {
             return "A, B";
-        } else if (pdfa2_flavour.equals(flavour)) {
+        }
+        if (pdfa2_flavour.equals(flavour)) {
             return "A, B, E";
         }
         return null;
@@ -88,14 +92,21 @@ public class ProfilesWikiGenerator {
     private static String getSpecification() {
         if (pdfa4_flavour.equals(flavour)) {
             return "ISO 19005-4:2020";
-        } else if (pdfa1_flavour.equals(flavour)) {
+        }
+        if (pdfa1_flavour.equals(flavour)) {
             return "ISO 19005-1:2005";
-        } else if (pdfa2_flavour.equals(flavour)) {
+        }
+        if (pdfa2_flavour.equals(flavour)) {
             return "ISO 19005-2:2011, ISO 19005-3:2012";
-        } else if (pdfua1_flavour.equals(flavour)) {
+        }
+        if (pdfua1_flavour.equals(flavour)) {
             return "ISO 14289-1:2014";
-        } else if (pdfua2_flavour.equals(flavour)) {
+        }
+        if (pdfua2_flavour.equals(flavour)) {
             return "ISO 14289-2:202X";
+        }
+        if (wcag2_2_flavour.equals(flavour)) {
+            return "WCAG 2.2";
         }
         return null;
     }

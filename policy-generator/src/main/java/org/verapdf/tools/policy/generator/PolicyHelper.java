@@ -1,30 +1,24 @@
 package org.verapdf.tools.policy.generator;
 
 public class PolicyHelper {
-    public static final String PASS = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+    public static final String START = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\"\n" +
             "            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
             "            xsi:schemaLocation=\"http://purl.oclc.org/dsdl/schematron \">\n" +
             "\n" +
-            "    <!-- Issue# ISSUE_NUM -->\n" +
-            "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
+            "ISSUE_NUMBER_PART" +
             "    <!-- File: {fileNameToBeReplaced} -->\n" +
-            "\n" +
+            "\n";
+    
+    public static final String ISSUE_NUMBER_PART = "    <!-- Issue# ISSUE_NUM -->\n" +
+                    "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n";
+    public static final String PASS = START + 
             "    <sch:pattern name = \"Checking the validationReport: document is compliant\">\n" +
             "        <sch:rule context=\"/report/jobs/job/validationReport\">\n" +
             "            <sch:assert test=\"(@isCompliant = 'true')\">Failed check, Expected: isCompliant=true</sch:assert>\n" +
             "        </sch:rule>\n" +
             "    </sch:pattern>\n";
-    public static final String FAIL = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\"\n" +
-            "            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "            xsi:schemaLocation=\"http://purl.oclc.org/dsdl/schematron \">\n" +
-            "\n" +
-            "    <!-- Issue# ISSUE_NUM -->\n" +
-            "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
-            "    <!-- File: {fileNameToBeReplaced} -->\n" +
-            "\n" +
-            "\n" +
+    public static final String FAIL = START +
             "    <sch:pattern name = \"Checking the validationReport: document is not compliant\">\n" +
             "        <sch:rule context=\"/report/jobs/job/validationReport\">\n" +
             "            <sch:assert test=\"(@isCompliant = 'false')\">Failed check, Expected: isCompliant=false</sch:assert>\n" +
@@ -69,15 +63,7 @@ public class PolicyHelper {
             "            {messageToBeReplaced}</sch:assert>\n" +
             "        </sch:rule>\n";
     static final String LOGS_REPORT_END = "    </sch:pattern>\n";
-    public static final String EXC = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\"\n" +
-            "            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "            xsi:schemaLocation=\"http://purl.oclc.org/dsdl/schematron \">\n" +
-            "\n\n" +
-            "    <!-- Issue# ISSUE_NUM -->\n" +
-            "    <!-- https://github.com/veraPDF/veraPDF-library/issues/ISSUE_NUM -->\n" +
-            "    <!-- File: {fileNameToBeReplaced} -->\n" +
-            "\n" +
+    public static final String EXC = START +
             "    <sch:pattern name = \"Checking the taskException\">\n" +
             "        <sch:rule context=\"/report/jobs/job/taskException\">\n" +
             "            <sch:assert test='contains(exceptionMessage, \"{exceptionMessageToBeReplaced}\")'>\n" +

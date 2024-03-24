@@ -1,6 +1,7 @@
 package org.verapdf.tools.policy.generator;
 
 import org.apache.commons.cli.*;
+import org.verapdf.cli.commands.VeraCliArgParser;
 import org.verapdf.core.VeraPDFException;
 import org.verapdf.metadata.fixer.FixerFactory;
 import org.verapdf.metadata.fixer.MetadataFixerConfig;
@@ -40,6 +41,8 @@ public class PolicyGenerator {
     private InputStream report;
     private ValidationProfile customProfile;
     private boolean isLogsEnabled = true;
+    
+    private String issueNumber = null;
 
     public PolicyGenerator() throws IOException {
         VeraGreenfieldFoundryProvider.initialise();
@@ -65,6 +68,9 @@ public class PolicyGenerator {
             }
             if (commandLine.hasOption("n")) {
                 generator.isLogsEnabled = false;
+            }
+            if (commandLine.hasOption("num")) {
+                generator.issueNumber = commandLine.getOptionValue("num");
             }
             generator.fileName = String.join(" ", commandLine.getArgs());
             if (commandLine.hasOption("v")) {
@@ -102,6 +108,9 @@ public class PolicyGenerator {
         Option verapdfPath = new Option("v", "verapdf_path", true, "path to verapdf");
         verapdfPath.setRequired(false);
         options.addOption(verapdfPath);
+        Option issueNumber = new Option("num", "issue_number", true, "number of issue");
+        issueNumber.setRequired(false);
+        options.addOption(issueNumber);
         return options;
     }
 
@@ -109,10 +118,10 @@ public class PolicyGenerator {
         List<String> command = new LinkedList<>();
         List<String> veraPDFParameters = new LinkedList<>();
         if (isLogsEnabled) {
-            veraPDFParameters.add("--addlogs");
+            veraPDFParameters.add(VeraCliArgParser.ADD_LOGS);
         }
         if (profilePath != null) {
-            veraPDFParameters.add("--profile");
+            veraPDFParameters.add(VeraCliArgParser.LOAD_PROFILE);
             veraPDFParameters.add(profilePath);
         }
 
@@ -208,7 +217,7 @@ public class PolicyGenerator {
 
         content = new StringBuilder(PolicyHelper.FAIL
                 .replace("{fileNameToBeReplaced}", shortFilePath)
-                .replace("ISSUE_NUM", shortFilePath.split("_")[0])
+                .replace("ISSUE_NUM", getIssueNumberPart())
                 .replace("{failedRulesToBeReplaced}", failedRulesToBeReplaced));
 
         nodeList = document.getElementsByTagName("rule");
@@ -251,7 +260,7 @@ public class PolicyGenerator {
     private void generatePassPolicy() {
         content = new StringBuilder(PolicyHelper.PASS
                 .replace("{fileNameToBeReplaced}", shortFilePath)
-                .replace("ISSUE_NUM", shortFilePath.split("_")[0]));
+                .replace("ISSUE_NUM", getIssueNumberPart()));
 
         System.out.println("Policy was created. PDF file is compliant with Validation Profile requirements");
     }
@@ -272,7 +281,7 @@ public class PolicyGenerator {
         String veraExceptionsToBeReplaced = node.getNamedItem("veraExceptions").getNodeValue();
         content = new StringBuilder(PolicyHelper.EXC
                 .replace("{fileNameToBeReplaced}", shortFilePath)
-                .replace("ISSUE_NUM", shortFilePath.split("_")[0])
+                .replace("ISSUE_NUM", getIssueNumberPart())
                 .replace("{exceptionMessageToBeReplaced}", exceptionMessageToBeReplaced)
                 .replace("{exceptionToBeReplaced}", exceptionToBeReplaced)
                 .replace("{totalJobsToBeReplaced}", totalJobsToBeReplaced)
@@ -333,5 +342,12 @@ public class PolicyGenerator {
             }
         }
         content.append(PolicyHelper.LOGS_REPORT_END);
+    }
+    
+    private String getIssueNumberPart() {
+        if (issueNumber == null) {
+            return "";
+        }
+        return PolicyHelper.ISSUE_NUMBER_PART.replace("ISSUE_NUM", issueNumber);
     }
 }
