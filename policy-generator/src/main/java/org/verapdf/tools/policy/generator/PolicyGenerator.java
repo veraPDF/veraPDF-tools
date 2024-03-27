@@ -37,7 +37,7 @@ public class PolicyGenerator {
     private Document document;
     private StringBuilder content;
     private String fileName;
-    private String shortFilePath;
+    private String shortFileName;
     private InputStream report;
     private ValidationProfile customProfile;
     private boolean isLogsEnabled = true;
@@ -184,8 +184,7 @@ public class PolicyGenerator {
         try {
             document = (DocumentBuilderFactory.newInstance().newDocumentBuilder()).parse(report);
 
-            String[] name = fileName.split("/");
-            shortFilePath = name[name.length - 1];
+            shortFileName = new File(fileName).getName();
             Path policy = Paths.get(fileName.replace(".pdf", ".sch"));
             NodeList nodeList = document.getElementsByTagName("validationReport");
 
@@ -216,8 +215,8 @@ public class PolicyGenerator {
         String failedRulesToBeReplaced = nodeList.item(0).getAttributes().getNamedItem("failedRules").getNodeValue();
 
         content = new StringBuilder(PolicyHelper.FAIL
-                .replace("{fileNameToBeReplaced}", shortFilePath)
-                .replace("ISSUE_NUM", getIssueNumberPart())
+                .replace("{fileNameToBeReplaced}", shortFileName)
+                .replace("ISSUE_NUMBER_PART", getIssueNumberPart())
                 .replace("{failedRulesToBeReplaced}", failedRulesToBeReplaced));
 
         nodeList = document.getElementsByTagName("rule");
@@ -259,8 +258,8 @@ public class PolicyGenerator {
 
     private void generatePassPolicy() {
         content = new StringBuilder(PolicyHelper.PASS
-                .replace("{fileNameToBeReplaced}", shortFilePath)
-                .replace("ISSUE_NUM", getIssueNumberPart()));
+                .replace("{fileNameToBeReplaced}", shortFileName)
+                .replace("ISSUE_NUMBER_PART", getIssueNumberPart()));
 
         System.out.println("Policy was created. PDF file is compliant with Validation Profile requirements");
     }
@@ -280,8 +279,8 @@ public class PolicyGenerator {
         String outOfMemoryToBeReplaced = node.getNamedItem("outOfMemory").getNodeValue();
         String veraExceptionsToBeReplaced = node.getNamedItem("veraExceptions").getNodeValue();
         content = new StringBuilder(PolicyHelper.EXC
-                .replace("{fileNameToBeReplaced}", shortFilePath)
-                .replace("ISSUE_NUM", getIssueNumberPart())
+                .replace("{fileNameToBeReplaced}", shortFileName)
+                .replace("ISSUE_NUMBER_PART", getIssueNumberPart())
                 .replace("{exceptionMessageToBeReplaced}", exceptionMessageToBeReplaced)
                 .replace("{exceptionToBeReplaced}", exceptionToBeReplaced)
                 .replace("{totalJobsToBeReplaced}", totalJobsToBeReplaced)
@@ -323,7 +322,7 @@ public class PolicyGenerator {
                     LogInfo logInfo = iterator.next();
                     content.append(PolicyHelper.LOG
                             .replace("{logToBeReplaced}", logInfo.getMessage().replace("'", "&apos;")
-                                    .replace(shortFilePath, ".pdf"))
+                                    .replace(shortFileName, ".pdf"))
                             .replace("{occurrencesToBeReplaced}", String.valueOf(logInfo.getOccurrences()))
                             .replace("{levelToBeReplaced}", logInfo.getLevel().getName()));
 
