@@ -25,6 +25,7 @@
         <module>pdf-deprecated-finder</module>
         <module>pdf-stream-change</module>
         <module>pdf-stream-dump</module>
+        <module>pdf-test-migration</module>
         <module>policy-generator</module>
         <module>preforma-classification</module>
         <module>profile-merger</module>

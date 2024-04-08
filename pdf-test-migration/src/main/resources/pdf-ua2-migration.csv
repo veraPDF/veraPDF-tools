@@ -1,0 +1,28 @@
+7.1 General;7.1-t11;8.2 Logical structure/8.2.1 General;8.2.1-t01;8.2.1 General - StructureTreeRoot
+7.1 General;7.1-t03;8.2 Logical structure/8.2.2 Real content;8.2.2-t01;8.2.2 Real content - Artifact or real content
+7.1 General;7.1-t05;8.2 Logical structure/8.2.4 Structure types;8.2.4-t01;8.2.4 Structure types - Standard roles
+7.1 General;7.1-t06;8.2 Logical structure/8.2.4 Structure types;8.2.4-t02;8.2.4 Structure types - Circular mapping
+7.2 Text;7.2-t15;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.26 Table (Table, TR, TH, TD, THead, TBody, TFoot);8.2.5.26-t01;8.2.5.26 Table - Regular Table
+7.2 Text;7.2-t41;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.26 Table (Table, TR, TH, TD, THead, TBody, TFoot);8.2.5.26-t02;8.2.5.26 Table - Regular Table
+7.2 Text;7.2-t42;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.26 Table (Table, TR, TH, TD, THead, TBody, TFoot);8.2.5.26-t03;8.2.5.26 Table - Regular Table
+7.2 Text;7.2-t43;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.26 Table (Table, TR, TH, TD, THead, TBody, TFoot);8.2.5.26-t04;8.2.5.26 Table - Regular Table
+7.5 Tables;7.5-t01;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.26 Table (Table, TR, TH, TD, THead, TBody, TFoot);8.2.5.26-t05;8.2.5.26 Table - Headers; IDs and Scope
+7.5 Tables;7.5-t02;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.26 Table (Table, TR, TH, TD, THead, TBody, TFoot);8.2.5.26-t06;8.2.5.26 Table - Headers; IDs and Scope
+7.3 Graphics;7.5-t01;8.2 Logical structure/8.2.5 Additional requirements for specific structure types/8.2.5.28 Figure/8.2.5.28.2 Figure properties;8.2.5.28.2-t01;8.2.5.28 Figure - Figure alternative and replacement text
+7.2 Text;7.2-t29;8.4 Text representation for content/8.4.4 Declaring natural language;8.4.4-t02;8.4 Text representation for content - Natural language specification
+7.21 Fonts/7.21.3 Composite fonts/7.21.3.1 General;7.21.3.1-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.3 Composite fonts/8.4.5.3.1 General;8.4.5.3.1-t01;8.4.5 Fonts - 8.4.5.3 Composite fonts - CIDSystemInfo
+7.21 Fonts/7.21.3 Composite fonts/7.21.3.2 CIDFonts;7.21.3.2-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.3 Composite fonts/8.4.5.3.2 CIDFonts;8.4.5.3.2-t01;8.4.5 Fonts - 8.4.5.3 Composite fonts - CIDToGIDMap
+7.21 Fonts/7.21.3 Composite fonts/7.21.3.3 CMaps;7.21.3.3-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.4 CMaps;8.4.5.4-t01;8.4.5 Fonts - 8.4.5.4 Composite fonts - CMaps
+7.21 Fonts/7.21.3 Composite fonts/7.21.3.3 CMaps;7.21.3.3-t02;8.4 Text representation for content/8.4.5 Fonts/8.4.5.4 CMaps;8.4.5.4-t02;8.4.5 Fonts - 8.4.5.4 Composite fonts - WMode
+7.21 Fonts/7.21.3 Composite fonts/7.21.3.3 CMaps;7.21.3.3-t03;8.4 Text representation for content/8.4.5 Fonts/8.4.5.4 CMaps;8.4.5.4-t03;8.4.5 Fonts - 8.4.5.4 Composite fonts - CMaps
+7.21 Fonts/7.21.4 Embedding/7.21.4.1 General;7.21.4.1-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.5 Embedding/8.4.5.5.1 General;8.4.5.5.1-t01;8.4.5 Fonts - 8.4.5.5 Embedding - General
+7.21 Fonts/7.21.4 Embedding/7.21.4.1 General;7.21.4.1-t02;8.4 Text representation for content/8.4.5 Fonts/8.4.5.5 Embedding/8.4.5.5.1 General;8.4.5.5.1-t02;8.4.5 Fonts - 8.4.5.5 Embedding - Glyphs
+7.21 Fonts/7.21.5 Font metrics;7.21.5-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.6 Font metrics;8.4.5.6-t01;8.4.5 Fonts - 8.4.5.6 Font metrics - Glyph width
+7.21 Fonts/7.21.6 Character encodings;7.21.6-t02;8.4 Text representation for content/8.4.5 Fonts/8.4.5.7 Character encodings;8.4.5.7-t02;8.4.5 Fonts - 8.4.5.7 Character encodings - Non-symbolic TrueType fonts
+7.21 Fonts/7.21.6 Character encodings;7.21.6-t03;8.4 Text representation for content/8.4.5 Fonts/8.4.5.7 Character encodings;8.4.5.7-t03;8.4.5 Fonts - 8.4.5.7 Character encodings - Symbolic TrueType fonts
+7.21 Fonts/7.21.7 Unicode character maps;7.21.7-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.8 Unicode character maps;8.4.5.8-t01;8.4.5 Fonts - 8.4.5.8 Unicode character maps - Unicode mapping
+7.21 Fonts/7.21.7 Unicode character maps;7.21.7-t02;8.4 Text representation for content/8.4.5 Fonts/8.4.5.8 Unicode character maps;8.4.5.8-t02;8.4.5 Fonts - 8.4.5.8 Unicode character maps - Valid Unicode values
+7.21 Fonts/7.21.8 Use of .notdef glyph;7.21.8-t01;8.4 Text representation for content/8.4.5 Fonts/8.4.5.9 Use of .notdef glyph;8.4.5.9-t01;8.4.5 Fonts - 8.4.5.9 Use of .notdef glyph - Use of .notdef glyph
+7.10 Optional content;7.10-t02;8.7 Optional content;8.7-t02;8.7 Optional content - AS key
+7.1 General;7.1-t09;8.11 Metadata/8.11.1 General;8.11.1-t01;8.11 Metadata - 8.11.1 General - Dc title
+7.1 General;7.1-t10;8.11 Metadata/8.11.2 Interactive aspects;8.11.2-t01;8.11 Metadata - 8.11.2 Interactive aspects - DisplayDocTitle
