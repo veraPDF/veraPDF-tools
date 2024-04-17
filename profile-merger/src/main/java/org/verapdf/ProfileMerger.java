@@ -91,6 +91,27 @@ public class ProfileMerger {
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
         generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
         generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
+        List<RuleId> excludedWTPDFRules = new ArrayList<>(18);//not for reuse
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 2));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 3));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 4));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 5));
+        generateProfile(zipSource, "WTPDF-1-0-Accessibility.xml", PDFUA_FOLDER, new String[]{"2", "WTPDF/1.0/Accessibility"}, new String[]{}, excludedWTPDFRules);
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.2.5.28.2", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.2.5.29", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.4.3", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.4.3", 2));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.4.3", 3));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.7", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.7", 2));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.3", 2));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.4.7", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.4.8", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.4.19", 1));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.4.19", 2));
+        excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.11.2", 1));
+        generateProfile(zipSource, "WTPDF-1-0-Reuse.xml", PDFUA_FOLDER, new String[]{"2", "WTPDF/1.0/Reuse"}, new String[]{}, excludedWTPDFRules);
     }
 
     private static void generateProfile(ZipFile zipSource, String generalProfileName, String folder, String[] folders,
@@ -153,6 +174,9 @@ public class ProfileMerger {
                 if (generalProfileName.contains("PDFA-3") && rule.getRuleId().getSpecification() == PDFAFlavour.Specification.ISO_19005_2) {
                     rule = updatePDFA2RuleToPDFA3(rule);
                 }
+                if (generalProfileName.contains("WTPDF")) {
+                    rule = updatePDFUA1RuleToWTPDF(rule);
+                }
                 if (generalProfileName.contains("PDFUA-1")) {
                     rule = updatePDFUA1RuleTags(rule);
                 }
@@ -167,7 +191,25 @@ public class ProfileMerger {
             variables.addAll(profile.getVariables());
         }
     }
-    
+
+    private static Rule updatePDFUA1RuleToWTPDF(Rule rule) {
+        RuleId ruleId = Profiles.ruleIdFromValues(PDFAFlavour.Specification.WTPDF_1_0, rule.getRuleId().getClause(),
+                rule.getRuleId().getTestNumber());
+        List<Reference> references = new ArrayList<>(rule.getReferences().size());
+        for (Reference reference : rule.getReferences()) {
+            if (reference.getSpecification().contains("ISO 14289-2:2024")) {
+                reference = Profiles.referenceFromValues(reference.getSpecification().replace("ISO 14289-2:2024",
+                        "WTPDF 1.0"), reference.getClause());
+            }
+            references.add(reference);
+        }
+        String description = rule.getDescription().replace("PDF/UA-2", "WTPDF 1.0")
+                .replace("ISO 14289-2", "WTPDF 1.0");
+        return Profiles.ruleFromValues(ruleId, rule.getObject(), rule.getDeferred(), rule.getTags(), description,
+                rule.getTest(), rule.getError(), references);
+        
+    }
+
     private static Rule updatePDFA2RuleToPDFA3(Rule rule) {
         RuleId ruleId = Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_19005_3, rule.getRuleId().getClause(), 
                 rule.getRuleId().getTestNumber());
