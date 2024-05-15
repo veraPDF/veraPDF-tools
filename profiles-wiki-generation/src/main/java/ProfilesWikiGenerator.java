@@ -21,6 +21,7 @@ public class ProfilesWikiGenerator {
     public static String pdfua1_flavour = "PDF/UA-1";
     public static String pdfua2_flavour = "PDF/UA-2";
     public static String pdfa4_flavour = "PDF/A-4";
+    public static String wtpdf_1_0_flavour = "WTPDF 1.0";
     public static String wcag2_2_flavour = "WCAG2.2";
 
     public static String flavour = pdfa4_flavour;
@@ -86,6 +87,9 @@ public class ProfilesWikiGenerator {
         if (pdfa2_flavour.equals(flavour)) {
             return "A, B, E";
         }
+        if (wtpdf_1_0_flavour.equals(flavour)) {
+            return "Accessibility, Reuse";
+        }
         return null;
     }
 
@@ -107,6 +111,9 @@ public class ProfilesWikiGenerator {
         }
         if (wcag2_2_flavour.equals(flavour)) {
             return "WCAG 2.2";
+        }
+        if (wtpdf_1_0_flavour.equals(flavour)) {
+            return "WTPDF 1.0";
         }
         return null;
     }
