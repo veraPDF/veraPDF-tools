@@ -98,7 +98,7 @@ public class StructureRuleCreator {
 				"Every structure type should be mapped to a standard structure type",
 				"isNotMappedToStandardType == false",
 				Profiles.errorFromValues("Non-standard structure type %1 is not mapped to a standard type",
-						Collections.singletonList(ErrorArgumentImpl.fromValues("valueS", null, null))),
+						Collections.singletonList(ErrorArgumentImpl.fromValues("namespaceAndTag", null, null))),
 				annex_l_reference);
 	}
 
@@ -111,7 +111,7 @@ public class StructureRuleCreator {
 				"A circular mapping shall not exist",
 				"circularMappingExist != true",
 				Profiles.errorFromValues("A circular mapping exists for %1 structure type",
-						Collections.singletonList(ErrorArgumentImpl.fromValues("valueS", null, null))),
+						Collections.singletonList(ErrorArgumentImpl.fromValues("namespaceAndTag", null, null))),
 				annex_l_reference);
 	}
 
