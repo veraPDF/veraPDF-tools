@@ -175,7 +175,7 @@ public class ProfileMerger {
                     rule = updatePDFA2RuleToPDFA3(rule);
                 }
                 if (generalProfileName.contains("WTPDF")) {
-                    rule = updatePDFUA1RuleToWTPDF(rule);
+                    rule = updatePDFUA2RuleToWTPDF(rule);
                 }
                 if (generalProfileName.contains("PDFUA-1")) {
                     rule = updatePDFUA1RuleTags(rule);
@@ -192,7 +192,7 @@ public class ProfileMerger {
         }
     }
 
-    private static Rule updatePDFUA1RuleToWTPDF(Rule rule) {
+    private static Rule updatePDFUA2RuleToWTPDF(Rule rule) {
         RuleId ruleId = Profiles.ruleIdFromValues(PDFAFlavour.Specification.WTPDF_1_0, rule.getRuleId().getClause(),
                 rule.getRuleId().getTestNumber());
         List<Reference> references = new ArrayList<>(rule.getReferences().size());

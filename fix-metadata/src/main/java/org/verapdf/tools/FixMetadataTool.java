@@ -85,7 +85,7 @@ public class FixMetadataTool {
             return "pdf-ua1.xmp";
         }
         if (flavour.getPart() == PDFAFlavour.Specification.ISO_14289_2) {
-            return "pdf-ua2.xmp";
+            return "pdf-ua2-wtpdf.xmp";
         }
         return "pdf-a.xmp";
     }
