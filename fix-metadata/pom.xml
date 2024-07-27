@@ -36,6 +36,7 @@
                     <include>pdf-a4.xmp</include>
                     <include>pdf-ua1.xmp</include>
                     <include>pdf-ua2.xmp</include>
+                    <include>pdf-ua2-wtpdf.xmp</include>
                 </includes>
             </resource>
         </resources>
