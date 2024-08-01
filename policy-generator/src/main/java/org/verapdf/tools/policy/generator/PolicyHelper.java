@@ -29,7 +29,9 @@ public class PolicyHelper {
             "        <sch:rule context=\"/report/jobs/job/validationReport/details\">\n" +
             "            <sch:assert test=\"(@failedRules = '{failedRulesToBeReplaced}')\">Failed check, Expected: {failedRulesToBeReplaced}</sch:assert>\t\n" +
             "        </sch:rule>\n" +
-            "\n" +
+            "\n";
+    
+    public static final String FAIL_RULE = 
             "        <sch:rule context=\"/report/jobs/job/validationReport/details/rule\">\n" +
             "            <sch:assert test=\"";
     public static final String RULE = "(@clause = '{ruleToBeReplaced}' and @testNumber = '{testNumToBeReplaced}' and @failedChecks = '{failedChecksCountToBeReplaced}')";
@@ -38,8 +40,8 @@ public class PolicyHelper {
     public static final String RULE_END = "\">Failed rules, Expected: \n" +
             "            {messageToBeReplaced}</sch:assert>\n" +
             "        </sch:rule>\n" +
-            "\n" +
-            "    </sch:pattern>\n";
+            "\n";
+    public static final String PATTERN_END = "    </sch:pattern>\n";
     public static final String LOGS_REPORT = "\n" +
             "    <sch:pattern name = \"Checking the logs\">\n" +
             "        <sch:rule context=\"/report/jobs/job\">\n" +
