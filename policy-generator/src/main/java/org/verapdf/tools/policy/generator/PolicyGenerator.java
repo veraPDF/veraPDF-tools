@@ -91,7 +91,7 @@ public class PolicyGenerator {
                 }
                 generator.validate();
             }
-            generator.generate();
+            generator.generate(options.hasOption("t"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,18 +99,26 @@ public class PolicyGenerator {
 
     private static Options defineOptions() {
         Options options = new Options();
+        
         Option isLogsChecked = new Option("n", "nologs", false, "Disables logs check");
         isLogsChecked.setRequired(false);
         options.addOption(isLogsChecked);
+        
         Option profile = new Option("p", "profile", true, "Specifies path to custom profile");
         profile.setRequired(false);
         options.addOption(profile);
+        
         Option verapdfPath = new Option("v", "verapdf_path", true, "path to verapdf");
         verapdfPath.setRequired(false);
         options.addOption(verapdfPath);
+        
         Option issueNumber = new Option("num", "issue_number", true, "number of issue");
         issueNumber.setRequired(false);
         options.addOption(issueNumber);
+        
+        Option tagged = new Option("t", "tagged", false, "Policy for tagged profile");
+        tagged.setRequired(false);
+        options.addOption(tagged);
         return options;
     }
 
@@ -180,7 +188,7 @@ public class PolicyGenerator {
         }
     }
 
-    public void generate() {
+    public void generate(boolean isTagged) {
         try {
             document = (DocumentBuilderFactory.newInstance().newDocumentBuilder()).parse(report);
 
@@ -195,7 +203,7 @@ public class PolicyGenerator {
                 if ("true".equals(isCompliant)) {
                     generatePassPolicy();
                 } else {
-                    generateFailPolicy();
+                    generateFailPolicy(isTagged);
                 }
             }
 
@@ -210,7 +218,7 @@ public class PolicyGenerator {
         }
     }
 
-    private void generateFailPolicy() {
+    private void generateFailPolicy(boolean isTagged) {
         NodeList nodeList = document.getElementsByTagName("details");
         String failedRulesToBeReplaced = nodeList.item(0).getAttributes().getNamedItem("failedRules").getNodeValue();
 
@@ -218,42 +226,59 @@ public class PolicyGenerator {
                 .replace("{fileNameToBeReplaced}", shortFileName)
                 .replace("ISSUE_NUMBER_PART", getIssueNumberPart())
                 .replace("{failedRulesToBeReplaced}", failedRulesToBeReplaced));
-
         nodeList = document.getElementsByTagName("rule");
         int size = nodeList.getLength();
         StringBuilder messageToBeReplaced = new StringBuilder();
-        SortedSet<RuleInfo> ruleInfoSet = new TreeSet<>();
+        Map<String, SortedSet<RuleInfo>> ruleInfoMap = new TreeMap<>();
         for (int i = 0; i < size; ++i) {
             NamedNodeMap node = nodeList.item(i).getAttributes();
-            ruleInfoSet.add(new RuleInfo(node.getNamedItem("clause").getNodeValue(),
+            ruleInfoMap.computeIfAbsent(isTagged ? getObjectName(nodeList.item(i)) : null, r -> new TreeSet<>()).add(
+                    new RuleInfo(node.getNamedItem("clause").getNodeValue(),
                     Integer.parseInt(node.getNamedItem("testNumber").getNodeValue()),
                     Integer.parseInt(node.getNamedItem("failedChecks").getNodeValue())));
         }
-        Iterator<RuleInfo> iterator = ruleInfoSet.iterator();
-        while (iterator.hasNext()) {
-            RuleInfo ruleInfo = iterator.next();
-            content.append(PolicyHelper.RULE
-                    .replace("{ruleToBeReplaced}", ruleInfo.getRuleId().getClause())
-                    .replace("{testNumToBeReplaced}", String.valueOf(ruleInfo.getRuleId().getTestNumber()))
-                    .replace("{failedChecksCountToBeReplaced}", String.valueOf(ruleInfo.getFailedChecks())));
-
-            messageToBeReplaced.append(PolicyHelper.RULE_MESSAGE
-                    .replace("{ruleToBeReplaced}",  ruleInfo.getRuleId().getClause())
-                    .replace("{testNumToBeReplaced}", String.valueOf(ruleInfo.getRuleId().getTestNumber()))
-                    .replace("{failedChecksCountToBeReplaced}", String.valueOf(ruleInfo.getFailedChecks())));
-            if (ruleInfo.getFailedChecks() > 1) {
-                messageToBeReplaced.append("s");
+        for (Map.Entry<String, SortedSet<RuleInfo>> map : ruleInfoMap.entrySet()) {
+            Iterator<RuleInfo> iterator = map.getValue().iterator();
+            content.append(PolicyHelper.FAIL_RULE);
+            if (isTagged) {
+                content.append("object != '").append(map.getKey()).append("' or\n            ");
             }
-            if (iterator.hasNext()) {
-                content.append(PolicyHelper.OR);
-                messageToBeReplaced.append(",").append(PolicyHelper.OR);
-            }
+            while (iterator.hasNext()) {
+                RuleInfo ruleInfo = iterator.next();
+                content.append(PolicyHelper.RULE
+                        .replace("{ruleToBeReplaced}", ruleInfo.getRuleId().getClause())
+                        .replace("{testNumToBeReplaced}", String.valueOf(ruleInfo.getRuleId().getTestNumber()))
+                        .replace("{failedChecksCountToBeReplaced}", String.valueOf(ruleInfo.getFailedChecks())));
 
+                messageToBeReplaced.append(PolicyHelper.RULE_MESSAGE
+                        .replace("{ruleToBeReplaced}",  ruleInfo.getRuleId().getClause())
+                        .replace("{testNumToBeReplaced}", String.valueOf(ruleInfo.getRuleId().getTestNumber()))
+                        .replace("{failedChecksCountToBeReplaced}", String.valueOf(ruleInfo.getFailedChecks())));
+                if (ruleInfo.getFailedChecks() > 1) {
+                    messageToBeReplaced.append("s");
+                }
+                if (iterator.hasNext()) {
+                    content.append(PolicyHelper.OR);
+                    messageToBeReplaced.append(",").append(PolicyHelper.OR);
+                }
+            }
+            content.append(PolicyHelper.RULE_END
+                    .replace("{messageToBeReplaced}", messageToBeReplaced));
+            messageToBeReplaced = new StringBuilder();
         }
-        content.append(PolicyHelper.RULE_END
-                .replace("{messageToBeReplaced}", messageToBeReplaced));
+        content.append(PolicyHelper.PATTERN_END);
 
         System.out.println("Policy was created. PDF file is not compliant with Validation Profile requirements");
+    }
+    
+    public String getObjectName(Node node) {
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if ("object".equals(children.item(i).getNodeName())) {
+                return children.item(i).getFirstChild().getNodeValue();
+            }
+        }
+        return null;
     }
 
     private void generatePassPolicy() {
