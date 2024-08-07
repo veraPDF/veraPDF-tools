@@ -91,13 +91,13 @@ public class ProfileMerger {
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
         generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
         generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
-        List<RuleId> excludedWTPDFRules = new ArrayList<>(18);//not for reuse
+        List<RuleId> excludedWTPDFRules = new ArrayList<>(excludedWCAGRules);
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 1));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 2));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 3));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 4));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 5));
-        generateProfile(zipSource, "WTPDF-1-0-Accessibility.xml", PDFUA_FOLDER, new String[]{"2", "WTPDF/1.0/Accessibility"}, new String[]{}, excludedWTPDFRules);
+        generateProfile(zipSource, "WTPDF-1-0-Accessibility.xml", PDFUA_FOLDER, new String[]{"2", "WTPDF/1.0/Accessibility"}, new String[]{"ISO-32005-Tagged.xml"}, excludedWTPDFRules);
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.2.5.28.2", 1));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.2.5.29", 1));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.4.3", 1));
@@ -111,7 +111,7 @@ public class ProfileMerger {
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.4.19", 1));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.9.2.4.19", 2));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "8.11.2", 1));
-        generateProfile(zipSource, "WTPDF-1-0-Reuse.xml", PDFUA_FOLDER, new String[]{"2", "WTPDF/1.0/Reuse"}, new String[]{}, excludedWTPDFRules);
+        generateProfile(zipSource, "WTPDF-1-0-Reuse.xml", PDFUA_FOLDER, new String[]{"2", "WTPDF/1.0/Reuse"}, new String[]{"ISO-32005-Tagged.xml"}, excludedWTPDFRules);
     }
 
     private static void generateProfile(ZipFile zipSource, String generalProfileName, String folder, String[] folders,
