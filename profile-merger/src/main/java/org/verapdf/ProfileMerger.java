@@ -193,7 +193,9 @@ public class ProfileMerger {
     }
 
     private static Rule updatePDFUA2RuleToWTPDF(Rule rule) {
-        RuleId ruleId = Profiles.ruleIdFromValues(PDFAFlavour.Specification.WTPDF_1_0, rule.getRuleId().getClause(),
+        PDFAFlavour.Specification specification = rule.getRuleId().getSpecification() == PDFAFlavour.Specification.ISO_14289_2 ? 
+                PDFAFlavour.Specification.WTPDF_1_0 : rule.getRuleId().getSpecification();
+        RuleId ruleId = Profiles.ruleIdFromValues(specification, rule.getRuleId().getClause(), 
                 rule.getRuleId().getTestNumber());
         List<Reference> references = new ArrayList<>(rule.getReferences().size());
         for (Reference reference : rule.getReferences()) {
