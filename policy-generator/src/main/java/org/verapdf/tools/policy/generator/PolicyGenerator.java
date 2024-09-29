@@ -199,11 +199,12 @@ public class PolicyGenerator {
             if (nodeList.getLength() == 0) {
                 generateExceptionPolicy();
             } else {
+                String profileName = nodeList.item(0).getAttributes().getNamedItem("profileName").getNodeValue();
                 String isCompliant = nodeList.item(0).getAttributes().getNamedItem("isCompliant").getNodeValue();
                 if ("true".equals(isCompliant)) {
-                    generatePassPolicy();
+                    generatePassPolicy(profileName);
                 } else {
-                    generateFailPolicy(isTagged);
+                    generateFailPolicy(isTagged, profileName);
                 }
             }
 
@@ -218,7 +219,7 @@ public class PolicyGenerator {
         }
     }
 
-    private void generateFailPolicy(boolean isTagged) {
+    private void generateFailPolicy(boolean isTagged, String profileName) {
         NodeList nodeList = document.getElementsByTagName("details");
         String failedRulesToBeReplaced = nodeList.item(0).getAttributes().getNamedItem("failedRules").getNodeValue();
 
@@ -268,7 +269,7 @@ public class PolicyGenerator {
         }
         content.append(PolicyHelper.PATTERN_END);
 
-        System.out.println("Policy was created. PDF file is not compliant with Validation Profile requirements");
+        System.out.println("Policy was created. PDF file is not compliant with " + profileName + " requirements");
     }
     
     public String getObjectName(Node node) {
@@ -281,12 +282,12 @@ public class PolicyGenerator {
         return null;
     }
 
-    private void generatePassPolicy() {
+    private void generatePassPolicy(String profileName) {
         content = new StringBuilder(PolicyHelper.PASS
                 .replace("{fileNameToBeReplaced}", shortFileName)
                 .replace("ISSUE_NUMBER_PART", getIssueNumberPart()));
 
-        System.out.println("Policy was created. PDF file is compliant with Validation Profile requirements");
+        System.out.println("Policy was created. PDF file is compliant with " + profileName + " requirements");
     }
 
     private void generateExceptionPolicy() {
