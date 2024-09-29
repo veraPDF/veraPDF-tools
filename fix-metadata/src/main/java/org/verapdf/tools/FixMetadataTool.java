@@ -1,17 +1,16 @@
 package org.verapdf.tools;
 
-import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.verapdf.metadata.fixer.gf.utils.DateConverter;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.xmp.XMPDateTimeFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 public class FixMetadataTool {
@@ -35,6 +34,10 @@ public class FixMetadataTool {
             setInfoEntries(flavour, pdDocument, time);
             setDocumentVersion(pdDocument, flavour);
             setMetadata(pdDocument, ouputFile, flavour, time);
+        }
+        if (flavour == PDFAFlavour.PDFUA_2) {
+            setNamespace(pdDocument);
+            pdDocument.getDocumentCatalog().setOpenAction(null);
         }
         pdDocument.save(ouputFile);
         pdDocument.close();
@@ -122,5 +125,56 @@ public class FixMetadataTool {
 
     private static String getXMPDate(Calendar date) {
         return XMPDateTimeFactory.createFromCalendar(DateConverter.toCalendar(DateConverter.toPDFDateFormat(date))).getISO8601String();
+    }
+    
+    private static void setNamespace(PDDocument document) {
+        PDStructureTreeRoot root = document.getDocumentCatalog().getStructureTreeRoot();
+
+        if (root != null) {
+            COSDictionary NS = getPDF2_0Namespace(root);
+
+            COSBase base = root.getK();
+            if (base instanceof COSDictionary) {
+                COSDictionary dictionary = (COSDictionary) base;
+                dictionary.setItem("NS", NS);
+                return;
+            }
+
+            root.getKids().forEach((child) -> {
+                if (child instanceof PDStructureElement) {
+                    COSDictionary dictionary = ((PDStructureElement) child).getCOSObject();
+                    dictionary.setItem("NS", NS);
+                }
+            });
+        }
+    }
+    
+    private static COSDictionary getPDF2_0Namespace(PDStructureTreeRoot root) {
+        COSBase originalNamespaces = root.getCOSObject().getItem("Namespaces");
+        
+        if (originalNamespaces instanceof COSArray) {
+            COSArray originalNamespacesArray = (COSArray) originalNamespaces;
+            for (COSBase currentNamespace : originalNamespacesArray) {
+                if (currentNamespace instanceof COSObject) {
+                    currentNamespace = ((COSObject) currentNamespace).getObject();
+                }
+                if (currentNamespace instanceof COSDictionary) {
+                    if ("http://iso.org/pdf2/ssn".equals(((COSDictionary) currentNamespace).getString("NS"))) {
+                        return (COSDictionary) currentNamespace;
+                    }
+                }
+            }
+        }
+        COSDictionary NS = new COSDictionary();
+        NS.setName("Type", "Namespace");
+        NS.setString("NS", "http://iso.org/pdf2/ssn");
+        if (originalNamespaces instanceof COSArray) {
+            ((COSArray) originalNamespaces).add(NS);
+        } else {
+            COSArray namespaces = new COSArray();
+            namespaces.add(NS);
+            root.getCOSObject().setItem("Namespaces", namespaces);
+        }
+        return NS;
     }
 }
