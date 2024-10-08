@@ -161,7 +161,7 @@ public class StructureRuleCreator {
 				StructureTag.STRUCTURE_TAG.getTag(),
 				"The logical structure of the conforming file shall be described by a structure hierarchy rooted " + 
 						"in the StructTreeRoot entry of the document catalog dictionary, as described in ISO 32000-2:2020, 14.7",
-				"StructTreeRoot_size == 1",
+				"containsStructTreeRoot == true",
 				Profiles.errorFromValues("StructTreeRoot entry is not present in the document catalog", Collections.emptyList()),
 				annex_l_reference);
 	}
