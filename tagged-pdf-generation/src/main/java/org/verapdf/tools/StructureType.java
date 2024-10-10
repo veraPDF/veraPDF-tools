@@ -50,21 +50,37 @@ public enum StructureType {
     H4("H4"),
     H5("H5"),
     H6("H6"),
-    DOCUMENT_FRAGMENT("DocumentFragment"),
-    ASIDE("Aside"),
-    TITLE("Title"),
-    FENOTE("FENote"),
-    SUB("Sub"),
-    EM("Em"),
-    STRONG("Strong"),
-    ARTIFACT("Artifact");
+    DOCUMENT_FRAGMENT("DocumentFragment", true),
+    ASIDE("Aside", true),
+    TITLE("Title", true),
+    FENOTE("FENote", true),
+    SUB("Sub", true),
+    EM("Em", true),
+    STRONG("Strong", true),
+    ARTIFACT("Artifact", true);
 
-    private final String text;
-    private StructureType(String text) {
-        this.text = text;
+    private final String type;
+    private final boolean is2_0;
+    
+    private StructureType(String type) {
+        this(type, false);
     }
 
-    public String string() {
-        return text;
+    private StructureType(String type, boolean is2_0) {
+        this.type = type;
+        this.is2_0 = is2_0;
+    }
+
+
+    public String getType() {
+        return type;
+    }
+    
+    public boolean isTransitional() {
+        return this == PART || this == NON_STRUCT || this == DIV;
+    }
+    
+    public boolean is2_0() {
+        return is2_0;
     }
 }
