@@ -229,17 +229,10 @@ public class StructureRuleCreator {
 		}
 
 		String childTest = constructChildElemAmountPart(child) + " <= 1";
-		String testObj;
 
 		String parent = rel.getParent();
-		switch (parent) {
-			case STRUCT_TREE_ROOT:
-				testObj = STRUCT_TREE_ROOT_OBJECT;
-				break;
-			default:
-				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
-		}
-
+		String testObj = getTestObject(parent);
+		
 		return new RuleData(testObj, childTest,
 				getDescriptionOrErrorMessage(ZERO_OR_ONE_DESCRIPTION_FORMAT, parent, child),
 				getDescriptionOrErrorMessage(ZERO_OR_ONE_ERROR_FORMAT, parent, child));
@@ -252,16 +245,9 @@ public class StructureRuleCreator {
 		}
 
 		String childTest = constructChildElemAmountPart(child) + " == 1";
-		String testObj;
 
 		String parent = rel.getParent();
-		switch (parent) {
-			case STRUCT_TREE_ROOT:
-				testObj = STRUCT_TREE_ROOT_OBJECT;
-				break;
-			default:
-				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
-		}
+		String testObj = getTestObject(parent);
 
 		return new RuleData(testObj, childTest,
 				getDescriptionOrErrorMessage(ONE_DESCRIPTION_FORMAT, parent, child),
@@ -281,14 +267,7 @@ public class StructureRuleCreator {
 				childTest = constructChildElemAmountPart(child) + " > 0";
 		}
 
-		String testObj;
-		switch (parent) {
-			case STRUCT_TREE_ROOT:
-				testObj = STRUCT_TREE_ROOT_OBJECT;
-				break;
-			default:
-				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
-		}
+		String testObj = getTestObject(parent);
 
 		return new RuleData(testObj, childTest, 
 				getDescriptionOrErrorMessage(AT_LEAST_ONE_DESCRIPTION_FORMAT, parent, child),
@@ -303,8 +282,8 @@ public class StructureRuleCreator {
 		String testObj;
 		switch (child) {
 			case CONTENT_ITEM:
+				testObj = getTestObject(parent);
 				childTest = "hasContentItems == false";
-				testObj = String.format(STRUCT_ELEM_FORMAT, parent);
 				break;
 			default:
 				if (HN.equals(parent)) {
@@ -337,6 +316,13 @@ public class StructureRuleCreator {
 			return string;
 		}
 		return "<" + string + ">";
+	}
+	
+	private String getTestObject(String object) {
+		if (STRUCT_TREE_ROOT.equals(object)) {
+			return STRUCT_TREE_ROOT_OBJECT;
+		}
+		return String.format(STRUCT_ELEM_FORMAT, object);
 	}
 
 	private String constructChildElemAmountPart(String child) {
