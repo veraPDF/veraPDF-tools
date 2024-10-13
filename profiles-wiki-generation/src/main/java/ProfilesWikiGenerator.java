@@ -15,20 +15,18 @@ public class ProfilesWikiGenerator {
 
     private static final Logger LOGGER = Logger.getLogger(ProfilesWikiGenerator.class.getCanonicalName());
 
+    public static final String ERROR_ARGUMENT_WARNING = "Error message for rule %s contains error argument";
+    public static final String pdfa1_flavour = "PDF/A-1";
+    public static final String pdfa2_flavour = "PDF/A-2";
+    public static final String pdfua1_flavour = "PDF/UA-1";
+    public static final String pdfua2_flavour = "PDF/UA-2";
+    public static final String pdfa4_flavour = "PDF/A-4";
+    public static final String wtpdf_1_0_flavour = "WTPDF 1.0";
+    public static final String wcag2_2_flavour = "WCAG2.2";
     public static String inputFileName = "PDFA-4.xml";
-    public static String pdfa1_flavour = "PDF/A-1";
-    public static String pdfa2_flavour = "PDF/A-2";
-    public static String pdfua1_flavour = "PDF/UA-1";
-    public static String pdfua2_flavour = "PDF/UA-2";
-    public static String pdfa4_flavour = "PDF/A-4";
-    public static String wtpdf_1_0_flavour = "WTPDF 1.0";
-    public static String wcag2_2_flavour = "WCAG2.2";
-
     public static String flavour = pdfa4_flavour;
     public static String outputFileName = "wiki_" + flavour.replace("/","") + ".md";
     
-    public static String ERROR_ARGUMENT_WARNING = "Error message for rule %s contains error argument";
-
     public static void main(String[] args) {
         try (InputStream inputStream = Files.newInputStream(Paths.get(inputFileName));
              PrintWriter out = new PrintWriter(outputFileName)) {
@@ -37,44 +35,52 @@ public class ProfilesWikiGenerator {
             rules.addAll(profile.getRules());
             out.println("# " + flavour + " validation rules");
             for (Rule rule : rules) {
-                String ruleNumber = rule.getRuleId().getClause() + "-" + rule.getRuleId().getTestNumber();
-                out.println("## Rule " + ruleNumber);
-                out.println();
-                out.println("### Requirement");
-                out.println();
-                String description = rule.getDescription().replace(" (*) ", "*\n\n>- *");
-                out.println(">*" + description + "*");
-                out.println();
-                out.println("### Error details");
-                out.println();
-                out.println(rule.getError().getMessage());
-                if (!rule.getError().getArguments().isEmpty()) {
-                    LOGGER.log(Level.WARNING, String.format(ERROR_ARGUMENT_WARNING, rule.getRuleId().getClause() + '-' + 
-                            rule.getRuleId().getTestNumber()));
-                }
-                out.println();
-                out.println("* Object type: `" + rule.getObject() + "`");
-                out.println("* Test condition: `" + rule.getTest() + "`");
-                out.println("* Specification: " + getSpecification());
-                String levels = getLevels();
-                if (levels != null) {
-                    out.println("* Levels: " + levels);
-                }
-                if (!rule.getReferences().isEmpty()) {
-                    out.println("* Additional references:");
-                    for (Reference reference : rule.getReferences()) {
-                        if (reference.getClause().isEmpty()) {
-                            out.println("  * " + reference.getSpecification());
-                        } else {
-                            out.println("  * " + reference.getSpecification() + ", " + reference.getClause());
-                        }
-                    }
-                }
-                out.println();
+                printRule(out, rule);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private static void printRule(PrintWriter out, Rule rule) {
+        String ruleNumber = rule.getRuleId().getClause() + "-" + rule.getRuleId().getTestNumber();
+        out.println("## Rule " + ruleNumber);
+        out.println();
+        out.println("### Requirement");
+        out.println();
+        String description = rule.getDescription().replace(" (*) ", "*\n\n>- *");
+        out.println(">*" + description + "*");
+        out.println();
+        out.println("### Error details");
+        out.println();
+        out.println(rule.getError().getMessage());
+        if (!rule.getError().getArguments().isEmpty()) {
+            LOGGER.log(Level.WARNING, String.format(ERROR_ARGUMENT_WARNING, rule.getRuleId().getClause() + '-' +
+                    rule.getRuleId().getTestNumber()));
+        }
+        out.println();
+        out.println("* Object type: `" + rule.getObject() + "`");
+        out.println("* Test condition: `" + rule.getTest() + "`");
+        if (wcag2_2_flavour.equals(flavour)) {
+            out.println("* Severity: " + rule.getTagsSet().iterator().next());
+        } else {
+            out.println("* Specification: " + getSpecification());
+        }
+        String levels = getLevels();
+        if (levels != null) {
+            out.println("* Levels: " + levels);
+        }
+        if (!rule.getReferences().isEmpty()) {
+            out.println("* Additional references:");
+            for (Reference reference : rule.getReferences()) {
+                if (reference.getClause().isEmpty()) {
+                    out.println("  * " + reference.getSpecification());
+                } else {
+                    out.println("  * " + reference.getSpecification() + ", " + reference.getClause());
+                }
+            }
+        }
+        out.println();
     }
 
     private static String getLevels() {
