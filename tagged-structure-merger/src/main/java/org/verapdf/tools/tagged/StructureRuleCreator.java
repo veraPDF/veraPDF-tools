@@ -58,16 +58,21 @@ public class StructureRuleCreator {
 		return this.flavour;
 	}
 
-	public List<Rule> generateRules(List<ParsedRelationStructure> relations) {
-		List<Rule> res = new ArrayList<>(relations.size());
+	public SortedSet<Rule> generateRules(List<ParsedRelationStructure> relations) {
+		SortedSet<Rule> res = new TreeSet<>(new Profiles.RuleComparator());
 		int testNumber = 0;
 
 		// standard structure type requirement
 		List<Reference> annex_l_reference = Collections.singletonList(Profiles.referenceFromValues(
 				this.pdfVersion.getIso(), "Annex_L"));
-
 		res.add(getRuleAboutNotRemappedNonStandardType(annex_l_reference, ++testNumber));
-
+		res.add(getRuleAboutCircularMapping(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutRemappedStandardType(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutStructTreeRoot(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutStructElementParent(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutMathMLParent(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutRuby(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutWarichu(annex_l_reference, ++testNumber));
 		for (ParsedRelationStructure relation : relations) {
 			if (shallProcess(relation)) {
 				RuleData data = getRuleData(relation);
@@ -75,18 +80,18 @@ public class StructureRuleCreator {
 					System.err.println("Missing rule for " + relation.getDescriptionString());
 					continue;
 				}
-				RuleId id = Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", ++testNumber);
+				RuleId id = Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005,
+						getClause(relation), 1);
 				ErrorDetails error = Profiles.errorFromValues(data.errorMessage, Collections.emptyList());
 				res.add(Profiles.ruleFromValues(id, data.object, null, StructureTag.getTags(relation), data.description,
 				                                data.test, error, annex_l_reference));
 			}
 		}
-		res.add(getRuleAboutCircularMapping(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutRemappedStandardType(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutStructTreeRoot(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutStructElementParent(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutMathMLParent(annex_l_reference, ++testNumber));
 		return res;
+	}
+	
+	private static String getClause(ParsedRelationStructure relation) {
+		return relation.getParent() + "-" + (CONTENT_ITEM.equals(relation.getChild()) ? "content" : relation.getChild());
 	}
 	
 	private Rule getRuleAboutNotRemappedNonStandardType(List<Reference> annex_l_reference, int testNumber) {
@@ -150,6 +155,32 @@ public class StructureRuleCreator {
 				"parentStandardType == 'Formula' || parentStandardType == 'MathML'",
 				Profiles.errorFromValues("The math structure type is nested within %1 tag instead of Formula", 
 						Collections.singletonList(ErrorArgumentImpl.fromValues("parentStandardType", null, null))),
+				annex_l_reference);
+	}
+
+	private Rule getRuleAboutRuby(List<Reference> annex_l_reference, int testNumber) {
+		return Profiles.ruleFromValues(
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				"SERuby",
+				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
+				"A Ruby structure element shall contain a single RB structure element and a single RT structure element or a Ruby structure element shall consist of a four-element subsequence: RB, RP, RT, RP",
+				"kidsStandardTypes == 'RB&amp;RT' || kidsStandardTypes == 'RB&amp;RP&amp;RT&amp;RP'",
+				Profiles.errorFromValues("The Ruby structure element has invalid sequence of children: %1",
+						Collections.singletonList(ErrorArgumentImpl.fromValues("kidsStandardTypes.replaceAll('&amp;', ',')", null, null))),
+				annex_l_reference);
+	}
+
+	private Rule getRuleAboutWarichu(List<Reference> annex_l_reference, int testNumber) {
+		return Profiles.ruleFromValues(
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				"SEWarichu",
+				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
+				"Content typeset as warichu shall be tagged in a three-element sequence consisting of the structure elements WP, WT and WP, grouped inside a Warichu structure element",
+				"kidsStandardTypes == 'WP&amp;WT&amp;WP'",
+				Profiles.errorFromValues("The Warichu structure element has invalid sequence of children: %1",
+						Collections.singletonList(ErrorArgumentImpl.fromValues("kidsStandardTypes.replaceAll('&amp;', ',')", null, null))),
 				annex_l_reference);
 	}
 
