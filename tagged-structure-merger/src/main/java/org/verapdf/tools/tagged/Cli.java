@@ -41,16 +41,14 @@ public final class Cli {
 			System.exit(0);
 		}
 
-		if (cliArgParser.getCsvPath() != null) {
-			CliProcessor processor = CliProcessor.createProcessorFromArgs(cliArgParser);
-			String outputPath = cliArgParser.getOutputPath();
-			if (outputPath != null) {
-				try (OutputStream out = new FileOutputStream(new File(outputPath))) {
-					processor.process(cliArgParser.getCsvPath(), out);
-				}
-			} else {
-				processor.process(cliArgParser.getCsvPath(), System.out);
+		CliProcessor processor = CliProcessor.createProcessorFromArgs(cliArgParser);
+		String outputPath = cliArgParser.getOutputPath();
+		if (outputPath != null) {
+			try (OutputStream out = new FileOutputStream(new File(outputPath))) {
+				processor.process(cliArgParser.getCsvPath(), out);
 			}
+		} else {
+			processor.process(cliArgParser.getCsvPath(), System.out);
 		}
 	}
 }

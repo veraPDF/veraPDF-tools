@@ -32,21 +32,26 @@ final class CliProcessor {
 
 	void process(String csvIn, OutputStream out) throws FileNotFoundException, JAXBException {
 		List<ParsedRelationStructure> relations = parseRelations(csvIn);
-		SortedSet<Rule> rules = new TreeSet<>(new Profiles.RuleComparator());
 		SortedSet<Variable> variables = new TreeSet<>(Comparator.comparing(Variable::getName));
-
-		rules.addAll(ruleCreator.generateRules(relations));
-
+		
+		SortedSet<Rule> rules = ruleCreator.generateRules(relations);
 		ProfileDetails det = Profiles.profileDetailsFromValues(name, description, creator, new Date());
 		ValidationProfile mergedProfile = Profiles.profileFromSortedValues(ruleCreator.getFlavour(), det, "", rules, variables);
 		Profiles.profileToXml(mergedProfile, out, true, false);
 	}
+	
+	private static Scanner getScanner(String csvIn) throws FileNotFoundException {
+		if (csvIn != null) {
+			return new Scanner(new File(csvIn));
+		}
+		return new Scanner(CliProcessor.class.getClassLoader().getResourceAsStream("rules.csv"));
+	}
 
 	private List<ParsedRelationStructure> parseRelations(String csvIn) throws FileNotFoundException {
 		List<ParsedRelationStructure> res = new ArrayList<>();
-		try (Scanner sc = new Scanner(new File(csvIn))) {
+		try (Scanner sc = getScanner(csvIn)) {
 			// read and check headers
-			String[] headers = sc.nextLine().split(",");
+			String[] headers = sc.nextLine().split(";");
 			if (!"".equals(headers[0])) {
 				throw new IllegalArgumentException("Invalid headers format");
 			}
@@ -55,7 +60,7 @@ final class CliProcessor {
 			int childIndex = 0;
 			while (sc.hasNextLine()) {
 				++childIndex;
-				String[] children = sc.nextLine().split(",");
+				String[] children = sc.nextLine().split(";");
 				// is this line correct, probably add first element check on containing in standard types set
 				if (children.length != headers.length || "".equals(children[0])) {
 					continue;

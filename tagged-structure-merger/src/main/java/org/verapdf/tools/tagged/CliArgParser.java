@@ -42,7 +42,7 @@ public class CliArgParser {
 	@Parameter(names = { PROFILE_CREATOR }, description = "The creator of generated profile")
 	private String creator = "veraPDF Consortium";
 
-	@Parameter(description = "INPUT_CSV", required = true)
+	@Parameter(description = "INPUT_CSV", required = false)
 	private List<String> csvPath = null;
 	/**
 	 * @return true if help requested
@@ -75,7 +75,7 @@ public class CliArgParser {
 	 * @return the list of file paths
 	 */
 	public String getCsvPath() {
-		return this.csvPath.get(0);
+		return this.csvPath != null ? this.csvPath.get(0) : null;
 	}
 
 
