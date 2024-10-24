@@ -227,6 +227,9 @@ public class PolicyGenerator {
                 .replace("{fileNameToBeReplaced}", shortFileName)
                 .replace("ISSUE_NUMBER_PART", getIssueNumberPart())
                 .replace("{failedRulesToBeReplaced}", failedRulesToBeReplaced));
+        if (isTagged) {
+            content.append(PolicyHelper.PATTERN_END);
+        }
         nodeList = document.getElementsByTagName("rule");
         int size = nodeList.getLength();
         StringBuilder messageToBeReplaced = new StringBuilder();
@@ -238,8 +241,15 @@ public class PolicyGenerator {
                     Integer.parseInt(node.getNamedItem("testNumber").getNodeValue()),
                     Integer.parseInt(node.getNamedItem("failedChecks").getNodeValue())));
         }
+        if (isTagged) {
+            content.append('\n');
+        }
         for (Map.Entry<String, SortedSet<RuleInfo>> map : ruleInfoMap.entrySet()) {
             Iterator<RuleInfo> iterator = map.getValue().iterator();
+            if (isTagged) {
+                content.append(PolicyHelper.PATTERN_START);
+                content.append('\n');
+            }
             content.append(PolicyHelper.FAIL_RULE);
             if (isTagged) {
                 content.append("object != '").append(map.getKey()).append("' or\n            ");
@@ -265,9 +275,15 @@ public class PolicyGenerator {
             }
             content.append(PolicyHelper.RULE_END
                     .replace("{messageToBeReplaced}", messageToBeReplaced));
+            if (isTagged) {
+                content.append(PolicyHelper.PATTERN_END);
+                content.append('\n');
+            }
             messageToBeReplaced = new StringBuilder();
         }
-        content.append(PolicyHelper.PATTERN_END);
+        if (!isTagged) {
+            content.append(PolicyHelper.PATTERN_END);
+        }
 
         System.out.println("Policy was created. PDF file is not compliant with " + profileName + " requirements");
     }

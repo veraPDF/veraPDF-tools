@@ -41,6 +41,8 @@ public class PolicyHelper {
             "            {messageToBeReplaced}</sch:assert>\n" +
             "        </sch:rule>\n" +
             "\n";
+
+    public static final String PATTERN_START = "    <sch:pattern>\n";
     public static final String PATTERN_END = "    </sch:pattern>\n";
     public static final String LOGS_REPORT = "\n" +
             "    <sch:pattern name = \"Checking the logs\">\n" +
