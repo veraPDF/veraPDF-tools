@@ -2,6 +2,7 @@ package org.verapdf.tools.tagged;
 
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.validation.profiles.*;
+import org.verapdf.tools.TaggedPDFConstants;
 import org.verapdf.tools.TaggedPDFHelper;
 import org.verapdf.tools.tagged.enums.ChildrenRelation;
 import org.verapdf.tools.tagged.enums.PDFVersion;
@@ -217,6 +218,12 @@ public class StructureRuleCreator {
 
 		// any amount relation type does not need any validation
 		if (relation.getRelation() == ChildrenRelation.ANY_AMOUNT) {
+			return false;
+		}
+
+		if (Objects.equals(relation.getParent(), TaggedPDFConstants.DIV) ||
+				Objects.equals(relation.getParent(), TaggedPDFConstants.PART) ||
+				Objects.equals(relation.getParent(), TaggedPDFConstants.NON_STRUCT)) {
 			return false;
 		}
 
