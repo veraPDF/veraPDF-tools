@@ -61,19 +61,18 @@ public class StructureRuleCreator {
 
 	public SortedSet<Rule> generateRules(List<ParsedRelationStructure> relations) {
 		SortedSet<Rule> res = new TreeSet<>(new Profiles.RuleComparator());
-		int testNumber = 0;
 
 		// standard structure type requirement
 		List<Reference> annex_l_reference = Collections.singletonList(Profiles.referenceFromValues(
 				this.pdfVersion.getIso(), "Annex_L"));
-		res.add(getRuleAboutNotRemappedNonStandardType(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutCircularMapping(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutRemappedStandardType(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutStructTreeRoot(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutStructElementParent(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutMathMLParent(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutRuby(annex_l_reference, ++testNumber));
-		res.add(getRuleAboutWarichu(annex_l_reference, ++testNumber));
+		res.add(getRuleAboutStructTreeRoot(annex_l_reference));
+		res.add(getRuleAboutStructElementParent(annex_l_reference));
+		res.add(getRuleAboutNotRemappedNonStandardType(annex_l_reference));
+		res.add(getRuleAboutCircularMapping(annex_l_reference));
+		res.add(getRuleAboutRemappedStandardType(annex_l_reference));
+		res.add(getRuleAboutMathMLParent(annex_l_reference));
+		res.add(getRuleAboutRuby(annex_l_reference));
+		res.add(getRuleAboutWarichu(annex_l_reference));
 		for (ParsedRelationStructure relation : relations) {
 			if (shallProcess(relation)) {
 				RuleData data = getRuleData(relation);
@@ -92,12 +91,12 @@ public class StructureRuleCreator {
 	}
 	
 	private static String getClause(ParsedRelationStructure relation) {
-		return relation.getParent() + "-" + (CONTENT_ITEM.equals(relation.getChild()) ? "content" : relation.getChild());
+		return "Table 5. " + relation.getParent() + "-" + (CONTENT_ITEM.equals(relation.getChild()) ? "content" : relation.getChild());
 	}
 	
-	private Rule getRuleAboutNotRemappedNonStandardType(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutNotRemappedNonStandardType(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 1),
 				"SENonStandard",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -108,9 +107,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 
-	private Rule getRuleAboutCircularMapping(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutCircularMapping(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 2),
 				"SENonStandard",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -121,9 +120,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 
-	private Rule getRuleAboutRemappedStandardType(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutRemappedStandardType(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 3),
 				"SENonStandard",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -134,9 +133,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 	
-	private Rule getRuleAboutStructElementParent(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutStructElementParent(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 2),
 				"PDStructElem",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -146,9 +145,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 
-	private Rule getRuleAboutMathMLParent(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutMathMLParent(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 1),
 				"SEMathMLStructureElement",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -159,9 +158,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 
-	private Rule getRuleAboutRuby(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutRuby(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 2),
 				"SERuby",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -172,9 +171,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 
-	private Rule getRuleAboutWarichu(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutWarichu(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 3),
 				"SEWarichu",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
@@ -185,9 +184,9 @@ public class StructureRuleCreator {
 				annex_l_reference);
 	}
 
-	private Rule getRuleAboutStructTreeRoot(List<Reference> annex_l_reference, int testNumber) {
+	private Rule getRuleAboutStructTreeRoot(List<Reference> annex_l_reference) {
 		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "6.2", testNumber),
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 1),
 				"PDDocument",
 				null,
 				StructureTag.STRUCTURE_TAG.getTag(),
