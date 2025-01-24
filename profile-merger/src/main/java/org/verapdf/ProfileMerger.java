@@ -83,12 +83,13 @@ public class ProfileMerger {
         excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 3));
         generateProfile(zipSource, "PDFUA-2-ISO32005.xml", PDFUA_FOLDER, new String[]{"2"}, new String[]{"ISO-32005-Tagged.xml"}, excludedTaggedRules);
         generateProfile(zipSource, "WCAG-2-2.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2"}, new String[]{}, Collections.emptyList());
-        List<RuleId> excludedWCAGRules = new ArrayList<>(9);
+        List<RuleId> excludedWCAGRules = new ArrayList<>(10);
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 2));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 3));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 4));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "5", 5));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "6.1", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.4.2", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.21.4.2", 1));
