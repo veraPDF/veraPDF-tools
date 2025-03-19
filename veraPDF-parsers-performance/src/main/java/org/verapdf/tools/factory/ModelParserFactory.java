@@ -17,7 +17,7 @@ public class ModelParserFactory {
     }
 
     public static PDFAParser createPDFBoxModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
-        return org.verapdf.model.ModelParser.createModelWithFlavour(toLoad, flavour);
+        return org.verapdf.gf.model.GFModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
     public static PDFAParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
