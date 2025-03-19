@@ -1,5 +1,6 @@
 package org.verapdf.tools;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -50,7 +51,7 @@ public class DeprecatedFinderCli {
 			}
 		}
 		for (File file : filesList) {
-			try (PDDocument pdDocument = PDDocument.load(file)) {
+			try (PDDocument pdDocument = Loader.loadPDF(file)) {
 				if (pdDocument.isEncrypted()) {
 					Utils.removeAllSecurity(pdDocument);
 				}
@@ -96,7 +97,13 @@ public class DeprecatedFinderCli {
 
 	public static void deprecatedFinder(PDDocument document, DeprecatedFeatures deprecatedFeatures) {
 		COSDocument cosDocument = document.getDocument();
-		List<COSObject> cosObjects = cosDocument.getObjects();
+
+		List<COSObject> cosObjects = new ArrayList<>();
+		cosObjects.addAll(cosDocument.getObjectsByType(COSName.PROC_SET));
+		cosObjects.addAll(cosDocument.getObjectsByType(COSName.CID_SET));
+		cosObjects.addAll(cosDocument.getObjectsByType(COSName.CHAR_SET));
+		cosObjects.addAll(cosDocument.getObjectsByType(COSName.PROC_SET));
+
 		for (COSObject object : cosObjects) {
 			COSBase baseObject = object.getObject();
 
@@ -219,7 +226,7 @@ public class DeprecatedFinderCli {
 
 	public static void removeProcSet(PDDocument document, List<Long> list) {
 		COSDocument cosDocument = document.getDocument();
-		for (COSObject object : cosDocument.getObjects()) {
+		for (COSObject object : cosDocument.getObjectsByType(COSName.PROC_SET)) {
 			if (list.contains(object.getObjectNumber())) {
 				COSBase baseObject = object.getObject();
 				if (baseObject instanceof COSStream) {
@@ -256,7 +263,7 @@ public class DeprecatedFinderCli {
 
 	public static void removeCharSet(PDDocument document, List<Long> list) throws IOException {
 		COSDocument cosDocument = document.getDocument();
-		for (COSObject object : cosDocument.getObjects()) {
+		for (COSObject object : cosDocument.getObjectsByType(COSName.CHAR_SET)) {
 			if (list.contains(object.getObjectNumber())) {
 				COSBase baseObject = object.getObject();
 				if (baseObject instanceof COSStream) {
@@ -280,7 +287,7 @@ public class DeprecatedFinderCli {
 
 	public static void removeName(PDDocument document, List<Long> list) {
 		COSDocument cosDocument = document.getDocument();
-		for (COSObject object : cosDocument.getObjects()) {
+		for (COSObject object : cosDocument.getObjectsByType(COSName.NAME)) {
 			if (list.contains(object.getObjectNumber())) {
 				COSBase baseObject = object.getObject();
 				if (baseObject instanceof COSStream) {

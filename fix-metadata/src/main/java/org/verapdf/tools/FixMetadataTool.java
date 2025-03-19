@@ -27,7 +27,7 @@ public class FixMetadataTool {
         PDDocument pdDocument = PDDocument.load(new File(args[0]));
         PDFAFlavour flavour = PDFAFlavour.byFlavourId(args[2]);
         if (flavour == PDFAFlavour.NO_FLAVOUR) {
-            PDMetadata newMetadata = new PDMetadata(pdDocument, new FileInputStream(args[2]), false);
+            PDMetadata newMetadata = new PDMetadata(pdDocument, new FileInputStream(args[2]));
             pdDocument.getDocumentCatalog().setMetadata(newMetadata);
         } else {
             Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -116,7 +116,7 @@ public class FixMetadataTool {
             } else {
                 meta = meta.replace("TITLE", file.getName().substring(0, file.getName().length() - 4));
             }
-            PDMetadata newMetadata = new PDMetadata(pdDocument, new ByteArrayInputStream(meta.getBytes()), false);
+            PDMetadata newMetadata = new PDMetadata(pdDocument, new ByteArrayInputStream(meta.getBytes()));
             pdDocument.getDocumentCatalog().setMetadata(newMetadata);
         } catch (Exception e) {
             e.printStackTrace();
