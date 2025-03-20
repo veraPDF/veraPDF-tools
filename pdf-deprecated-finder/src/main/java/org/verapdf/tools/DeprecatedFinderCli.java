@@ -96,7 +96,6 @@ public class DeprecatedFinderCli {
 
 	public static void deprecatedFinder(PDDocument document, DeprecatedFeatures deprecatedFeatures) {
 		COSDocument cosDocument = document.getDocument();
-
 		List<COSObject> cosObjects = cosDocument.getObjects();
 		for (COSObject object : cosObjects) {
 			COSBase baseObject = object.getObject();
