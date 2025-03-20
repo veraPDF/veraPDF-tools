@@ -15,24 +15,6 @@
 
         <dependency>
             <groupId>org.verapdf</groupId>
-            <artifactId>pdfbox-feature-reporting</artifactId>
-            <version>${verapdf.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.verapdf</groupId>
-            <artifactId>pdfbox-validation-model</artifactId>
-            <version>${verapdf.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.verapdf</groupId>
-            <artifactId>pdfbox-metadata-fixer</artifactId>
-            <version>${verapdf.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.verapdf</groupId>
             <artifactId>feature-reporting</artifactId>
             <version>${verapdf.version}</version>
         </dependency>

@@ -16,18 +16,12 @@ public class ModelParserFactory {
     private ModelParserFactory() {
     }
 
-    public static PDFAParser createPDFBoxModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
-        return org.verapdf.model.ModelParser.createModelWithFlavour(toLoad, flavour);
-    }
-
     public static PDFAParser createGreenfieldModelParser(InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
         return org.verapdf.gf.model.GFModelParser.createModelWithFlavour(toLoad, flavour);
     }
 
     public static PDFAParser createModelParser(ModelParserType type, InputStream toLoad, PDFAFlavour flavour) throws ModelParsingException, EncryptedPdfException {
         switch (type) {
-            case PDFBOX:
-                return createPDFBoxModelParser(toLoad, flavour);
             case GREENFIELD:
                 return createGreenfieldModelParser(toLoad, flavour);
             default:
