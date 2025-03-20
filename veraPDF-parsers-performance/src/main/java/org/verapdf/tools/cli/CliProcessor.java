@@ -113,10 +113,7 @@ final class CliProcessor {
 
 		if (!args.isValidationOff()) {
 			try {
-				showResults("Validation",
-						checker.doesValidationResultsEquals(),
-						checker.getTimeOfValidation(ModelParserType.PDFBOX),
-						checker.getTimeOfValidation(ModelParserType.GREENFIELD));
+				showResults("Validation", checker.getTimeOfValidation(ModelParserType.GREENFIELD));
 			} catch (ValidationException e) {
 				System.err.println("Exception during one of validations");
 				e.printStackTrace();
@@ -124,34 +121,18 @@ final class CliProcessor {
 		}
 
 //		if (args.fixMetadata()) {
-//			showResults("Metadata Fixer",
-//					checker.doesMetadataFixerResultsEquals(),
-//					checker.getTimeOfMetadataFixing(ModelParserType.PDFBOX),
-//					checker.getTimeOfMetadataFixing(ModelParserType.GREENFIELD));
+//			showResults("Metadata Fixer", checker.getTimeOfMetadataFixing(ModelParserType.GREENFIELD));
 //		}
 
 		if (args.extractFeatures()) {
 			showResults("Features Extraction",
-					checker.doesFeaturesCollectionsEquals(),
-					checker.getTimeOfFeaturesCollecting(ModelParserType.PDFBOX),
 					checker.getTimeOfFeaturesCollecting(ModelParserType.GREENFIELD));
 		}
 	}
 
-	private void showResults(String processType, boolean isEquals, long pdfboxTime, long greenfieldTime) {
+	private void showResults(String processType, long greenfieldTime) {
 		System.out.println(processType + " results:");
-		System.out.println("	Equals: " + isEquals);
-		System.out.println("	" + convertMillisToHumanReadableTime(pdfboxTime) + " PDFBox based time");
 		System.out.println("	" + convertMillisToHumanReadableTime(greenfieldTime) + " Greenfield based time");
-
-		double pr = (greenfieldTime*1./pdfboxTime)*100 - 100;
-		if (pr > 0) {
-			System.out.println("	SLOWER " + (int)pr + "%");
-		} else if (pr < 0) {
-			System.out.println("	FASTER " + Math.abs((int)pr) + "%");
-		} else {
-			System.out.println("	EQUAL");
-		}
 	}
 
 	private String convertMillisToHumanReadableTime(long millis) {
