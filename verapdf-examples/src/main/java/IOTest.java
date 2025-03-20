@@ -20,7 +20,7 @@ import java.util.List;
 public class IOTest {
 
 	public static void main(String[] args) {
-		// Foundry initialising. Can be changed into PDFBox based one
+		// Foundry initialising
 		VeraGreenfieldFoundryProvider.initialise();
 		// Default validator config
 		ValidatorConfig validatorConfig = ValidatorFactory.defaultConfig();
