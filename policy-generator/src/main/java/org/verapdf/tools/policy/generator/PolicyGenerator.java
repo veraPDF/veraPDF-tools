@@ -91,7 +91,7 @@ public class PolicyGenerator {
                 }
                 generator.validate();
             }
-            generator.generate(options.hasOption("t"));
+            generator.generate(commandLine.hasOption("t"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -236,7 +236,7 @@ public class PolicyGenerator {
         Map<String, SortedSet<RuleInfo>> ruleInfoMap = new TreeMap<>();
         for (int i = 0; i < size; ++i) {
             NamedNodeMap node = nodeList.item(i).getAttributes();
-            ruleInfoMap.computeIfAbsent(isTagged ? getObjectName(nodeList.item(i)) : null, r -> new TreeSet<>()).add(
+            ruleInfoMap.computeIfAbsent(isTagged ? getObjectName(nodeList.item(i)) : "", r -> new TreeSet<>()).add(
                     new RuleInfo(node.getNamedItem("clause").getNodeValue(),
                     Integer.parseInt(node.getNamedItem("testNumber").getNodeValue()),
                     Integer.parseInt(node.getNamedItem("failedChecks").getNodeValue())));
