@@ -75,6 +75,7 @@ public class ProfileMerger {
         List<RuleId> excludedTaggedRules = new ArrayList<>(8);
         excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 1));
         excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 2));
+        excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 3));
         excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 1));
         excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 2));
         excludedTaggedRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 3));
@@ -96,7 +97,7 @@ public class ProfileMerger {
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.21.4.2", 2));
         generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
         generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
-        List<RuleId> excludedWTPDFRules = new ArrayList<>(18);
+        List<RuleId> excludedWTPDFRules = new ArrayList<>(excludedTaggedRules);
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 1));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 2));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 3));
