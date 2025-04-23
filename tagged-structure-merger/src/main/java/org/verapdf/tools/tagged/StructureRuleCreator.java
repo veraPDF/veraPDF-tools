@@ -63,16 +63,17 @@ public class StructureRuleCreator {
 		SortedSet<Rule> res = new TreeSet<>(new Profiles.RuleComparator());
 
 		// standard structure type requirement
+		res.add(getRuleAboutStructTreeRoot());
+		res.add(getRuleAboutStructElementParent());
+		res.add(getRuleAboutMarkedEntry());
+		res.add(getRuleAboutNotRemappedNonStandardType());
+		res.add(getRuleAboutCircularMapping());
+		res.add(getRuleAboutRemappedStandardType());
+		res.add(getRuleAboutMathMLParent());
+		res.add(getRuleAboutRuby());
+		res.add(getRuleAboutWarichu());
 		List<Reference> annex_l_reference = Collections.singletonList(Profiles.referenceFromValues(
 				this.pdfVersion.getIso(), "Annex_L"));
-		res.add(getRuleAboutStructTreeRoot(annex_l_reference));
-		res.add(getRuleAboutStructElementParent(annex_l_reference));
-		res.add(getRuleAboutNotRemappedNonStandardType(annex_l_reference));
-		res.add(getRuleAboutCircularMapping(annex_l_reference));
-		res.add(getRuleAboutRemappedStandardType(annex_l_reference));
-		res.add(getRuleAboutMathMLParent(annex_l_reference));
-		res.add(getRuleAboutRuby(annex_l_reference));
-		res.add(getRuleAboutWarichu(annex_l_reference));
 		for (ParsedRelationStructure relation : relations) {
 			if (shallProcess(relation)) {
 				RuleData data = getRuleData(relation);
@@ -93,8 +94,49 @@ public class StructureRuleCreator {
 	private static String getClause(ParsedRelationStructure relation) {
 		return "Table 5. " + relation.getParent() + "-" + (CONTENT_ITEM.equals(relation.getChild()) ? "content" : relation.getChild());
 	}
+
+	private Rule getRuleAboutStructTreeRoot() {
+		return Profiles.ruleFromValues(
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 1),
+				"PDDocument",
+				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
+				"The logical structure of the conforming file shall be described by a structure hierarchy rooted " +
+						"in the StructTreeRoot entry of the document catalog dictionary, as described in ISO 32000-2:2020, 14.7",
+				"containsStructTreeRoot == true",
+				Profiles.errorFromValues("StructTreeRoot entry is not present in the document catalog", Collections.emptyList()),
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.7")));
+	}
+
+	private Rule getRuleAboutStructElementParent() {
+		return Profiles.ruleFromValues(
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 2),
+				"PDStructElem",
+				null,
+				StructureTag.STRUCTURE_TAG.getTag(),
+				"A structure element dictionary shall contain the P (parent) entry according to ISO 32000-2:2020, 14.7.2, Table 323",
+				"containsParent == true",
+				Profiles.errorFromValues("A structure element dictionary does not contain the P (parent) entry", Collections.emptyList()),
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.7.2, Table 323")));
+	}
+
+	private Rule getRuleAboutMarkedEntry() {
+		List<ErrorArgument> errorArguments = new ArrayList<>(2);
+		errorArguments.add(ErrorArgumentImpl.fromValues("MarkInfo", null, null));
+		errorArguments.add(ErrorArgumentImpl.fromValues("Marked", null, null));
+		return Profiles.ruleFromValues(
+				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 3),
+				"CosDocument",
+				null,
+				"syntax",
+				"The document catalog dictionary shall include a MarkInfo dictionary containing an entry, Marked, whose value shall be true",
+				"Marked == true",
+				Profiles.errorFromValues("MarkInfo dictionary is not present in the document catalog, or Marked entry is set to false or\n" +
+						"                    is not present in the MarkInfo dictionary (MarkInfo = %1, Marked = %2)", errorArguments),
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.7.1")));
+	}
 	
-	private Rule getRuleAboutNotRemappedNonStandardType(List<Reference> annex_l_reference) {
+	private Rule getRuleAboutNotRemappedNonStandardType() {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 1),
 				"SENonStandard",
@@ -104,10 +146,10 @@ public class StructureRuleCreator {
 				"isNotMappedToStandardType == false",
 				Profiles.errorFromValues("Non-standard structure type %1 is not mapped to a standard type",
 						Collections.singletonList(ErrorArgumentImpl.fromValues("namespaceAndTag", null, null))),
-				annex_l_reference);
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.8.6")));
 	}
 
-	private Rule getRuleAboutCircularMapping(List<Reference> annex_l_reference) {
+	private Rule getRuleAboutCircularMapping() {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 2),
 				"SENonStandard",
@@ -117,10 +159,10 @@ public class StructureRuleCreator {
 				"circularMappingExist != true",
 				Profiles.errorFromValues("A circular mapping exists for %1 structure type",
 						Collections.singletonList(ErrorArgumentImpl.fromValues("namespaceAndTag", null, null))),
-				annex_l_reference);
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.8.6")));
 	}
 
-	private Rule getRuleAboutRemappedStandardType(List<Reference> annex_l_reference) {
+	private Rule getRuleAboutRemappedStandardType() {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "5.2", 3),
 				"SENonStandard",
@@ -130,22 +172,10 @@ public class StructureRuleCreator {
 				"remappedStandardType == null",
 				Profiles.errorFromValues("The standard structure type %1 is remapped to a non-standard type",
 						Collections.singletonList(ErrorArgumentImpl.fromValues("remappedStandardType", null, null))),
-				annex_l_reference);
-	}
-	
-	private Rule getRuleAboutStructElementParent(List<Reference> annex_l_reference) {
-		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 2),
-				"PDStructElem",
-				null,
-				StructureTag.STRUCTURE_TAG.getTag(),
-				"A structure element dictionary shall contain the P (parent) entry according to ISO 32000-2:2020, 14.7.2, Table 323",
-				"containsParent == true",
-				Profiles.errorFromValues("A structure element dictionary does not contain the P (parent) entry", Collections.emptyList()),
-				annex_l_reference);
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.8.6")));
 	}
 
-	private Rule getRuleAboutMathMLParent(List<Reference> annex_l_reference) {
+	private Rule getRuleAboutMathMLParent() {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 1),
 				"SEMathMLStructureElement",
@@ -155,10 +185,10 @@ public class StructureRuleCreator {
 				"parentStandardType == 'Formula' || parentStandardType == 'MathML'",
 				Profiles.errorFromValues("The math structure type is nested within %1 tag instead of Formula", 
 						Collections.singletonList(ErrorArgumentImpl.fromValues("parentStandardType", null, null))),
-				annex_l_reference);
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.8.6.3")));
 	}
 
-	private Rule getRuleAboutRuby(List<Reference> annex_l_reference) {
+	private Rule getRuleAboutRuby() {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 2),
 				"SERuby",
@@ -168,10 +198,10 @@ public class StructureRuleCreator {
 				"kidsStandardTypes == 'RB&amp;RT' || kidsStandardTypes == 'RB&amp;RP&amp;RT&amp;RP'",
 				Profiles.errorFromValues("The Ruby structure element has invalid sequence of children: %1",
 						Collections.singletonList(ErrorArgumentImpl.fromValues("kidsStandardTypes.replaceAll('&amp;', ',')", null, null))),
-				annex_l_reference);
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.8.4.7.3, Table 369")));
 	}
 
-	private Rule getRuleAboutWarichu(List<Reference> annex_l_reference) {
+	private Rule getRuleAboutWarichu() {
 		return Profiles.ruleFromValues(
 				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "7.2", 3),
 				"SEWarichu",
@@ -181,20 +211,7 @@ public class StructureRuleCreator {
 				"kidsStandardTypes == 'WP&amp;WT&amp;WP'",
 				Profiles.errorFromValues("The Warichu structure element has invalid sequence of children: %1",
 						Collections.singletonList(ErrorArgumentImpl.fromValues("kidsStandardTypes.replaceAll('&amp;', ',')", null, null))),
-				annex_l_reference);
-	}
-
-	private Rule getRuleAboutStructTreeRoot(List<Reference> annex_l_reference) {
-		return Profiles.ruleFromValues(
-				Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005, "1", 1),
-				"PDDocument",
-				null,
-				StructureTag.STRUCTURE_TAG.getTag(),
-				"The logical structure of the conforming file shall be described by a structure hierarchy rooted " + 
-						"in the StructTreeRoot entry of the document catalog dictionary, as described in ISO 32000-2:2020, 14.7",
-				"containsStructTreeRoot == true",
-				Profiles.errorFromValues("StructTreeRoot entry is not present in the document catalog", Collections.emptyList()),
-				annex_l_reference);
+				Collections.singletonList(Profiles.referenceFromValues(this.pdfVersion.getIso(), "14.8.4.7.3, Table 369")));
 	}
 
 	private boolean shallProcess(ParsedRelationStructure relation) {
