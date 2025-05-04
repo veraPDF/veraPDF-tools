@@ -193,7 +193,7 @@ public class PolicyGenerator {
             document = (DocumentBuilderFactory.newInstance().newDocumentBuilder()).parse(report);
 
             shortFileName = new File(fileName).getName();
-            Path policy = Paths.get(fileName.replace(".pdf", ".sch"));
+            Path policy = Paths.get(fileName.substring(0, fileName.length() - 4) + ".sch");
             NodeList nodeList = document.getElementsByTagName("validationReport");
 
             if (nodeList.getLength() == 0) {
@@ -364,7 +364,7 @@ public class PolicyGenerator {
                     LogInfo logInfo = iterator.next();
                     content.append(PolicyHelper.LOG
                             .replace("{logToBeReplaced}", logInfo.getMessage().replace("'", "&apos;")
-                                    .replace(shortFileName, ".pdf"))
+                                    .replace(fileName, ".pdf"))
                             .replace("{occurrencesToBeReplaced}", String.valueOf(logInfo.getOccurrences()))
                             .replace("{levelToBeReplaced}", logInfo.getLevel().getName()));
 
