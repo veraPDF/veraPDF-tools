@@ -308,10 +308,7 @@ public class PolicyGenerator {
 
     private void generateExceptionPolicy() {
         NodeList nodeList = document.getElementsByTagName("exceptionMessage");
-        String exceptionToBeReplaced = nodeList.item(0).getFirstChild().getNodeValue()
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
+        String exceptionToBeReplaced = getSchString(nodeList.item(0).getFirstChild().getNodeValue());
         String exceptionMessageToBeReplaced = exceptionToBeReplaced.replace("'", "&apos;");
 
         NamedNodeMap node = document.getElementsByTagName("batchSummary").item(0).getAttributes();
@@ -353,10 +350,7 @@ public class PolicyGenerator {
                 for (int i = 0; i < size; ++i) {
                     Node node = nodeList.item(i);
                     logInfoSet.add(new LogInfo(Level.parse(node.getAttributes().getNamedItem("level").getNodeValue()),
-                            node.getFirstChild().getNodeValue()
-                                    .replace("&", "&amp;")
-                                    .replace("<", "&lt;")
-                                    .replace(">", "&gt;"),
+                            getSchString(node.getFirstChild().getNodeValue()),
                             Integer.parseInt(node.getAttributes().getNamedItem("occurrences").getNodeValue())));
                 }
                 Iterator<LogInfo> iterator = logInfoSet.iterator();
@@ -383,6 +377,15 @@ public class PolicyGenerator {
             }
         }
         content.append(PolicyHelper.LOGS_REPORT_END);
+    }
+    
+    private static String getSchString(String string) {
+        if (string.contains("\"")) {
+            logger.log(Level.WARNING, "Log or error message contains double quote");
+        }
+        return string.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
     }
     
     private String getIssueNumberPart() {
