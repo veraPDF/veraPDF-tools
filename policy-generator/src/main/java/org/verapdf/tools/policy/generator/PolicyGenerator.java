@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toList;
 
 public class PolicyGenerator {
     private static final String HELP = "[options] <FILE>\n Options:";
-    private static final Logger logger = Logger.getLogger(PolicyGenerator.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(PolicyGenerator.class.getCanonicalName());
     private Document document;
     private StringBuilder content;
     private String fileName;
@@ -83,7 +83,7 @@ public class PolicyGenerator {
                             generator.customProfile = Profiles.profileFromXml(is);
                         } catch (JAXBException | FileNotFoundException e) {
                             generator.customProfile = null;
-                            logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
+                            LOGGER.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -199,6 +199,9 @@ public class PolicyGenerator {
             if (nodeList.getLength() == 0) {
                 generateExceptionPolicy();
             } else {
+                if (nodeList.getLength() > 1) {
+                    LOGGER.log(Level.WARNING, "The validation report contains results for several profiles. Policy file is probably incorrect.");
+                }
                 String profileName = nodeList.item(0).getAttributes().getNamedItem("profileName").getNodeValue();
                 String isCompliant = nodeList.item(0).getAttributes().getNamedItem("isCompliant").getNodeValue();
                 if ("true".equals(isCompliant)) {
@@ -381,7 +384,7 @@ public class PolicyGenerator {
     
     private static String getSchString(String string) {
         if (string.contains("\"")) {
-            logger.log(Level.WARNING, "Log or error message contains double quote");
+            LOGGER.log(Level.WARNING, "Log or error message contains double quote");
         }
         return string.replace("&", "&amp;")
                 .replace("<", "&lt;")
