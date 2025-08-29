@@ -35,6 +35,11 @@ public class StructureRuleCreator {
 	private static final String ZERO_OR_ONE_DESCRIPTION_FORMAT = "%s shall contain at most one %s";
 	private static final String ZERO_OR_ONE_ERROR_FORMAT = "%s contains more than one %s";
 
+	private static final String ZERO_OR_ONE_IF_PARENT_IS_GROUPING_DESCRIPTION_FORMAT = "%s, when used as a grouping element, shall contain at most one %s";
+	private static final String ZERO_OR_ONE_IF_PARENT_IS_GROUPING_ERROR_FORMAT = "%s is used as a grouping element, but contains more than one %s";
+	private static final String FORBIDDEN_IF_PARENT_IS_NOT_GROUPING_DESCRIPTION_FORMAT = "%s, when used as a non-grouping element, shall not contain %s";
+	private static final String FORBIDDEN_IF_PARENT_IS_NOT_GROUPING_ERROR_FORMAT = "%s is used as a non-grouping element, but contains %s";
+
 	private static final String ONE_DESCRIPTION_FORMAT = "%s shall contain exactly one %s";
 	private static final String ONE_ERROR_FORMAT = "%s either doesn't contain or contains more than one %s";
 
@@ -76,16 +81,19 @@ public class StructureRuleCreator {
 				this.pdfVersion.getIso(), "Annex_L"));
 		for (ParsedRelationStructure relation : relations) {
 			if (shallProcess(relation)) {
-				RuleData data = getRuleData(relation);
-				if (data == null) {
+				List<RuleData> datas = getRuleDatas(relation);
+				if (datas == null || datas.isEmpty()) {
 					System.err.println("Missing rule for " + relation.getDescriptionString());
 					continue;
 				}
-				RuleId id = Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005,
-						getClause(relation), 1);
-				ErrorDetails error = Profiles.errorFromValues(data.errorMessage, Collections.emptyList());
-				res.add(Profiles.ruleFromValues(id, data.object, null, StructureTag.getTags(relation), data.description,
-				                                data.test, error, annex_l_reference));
+				int testNumber = 1;
+				for (RuleData data : datas) {
+					RuleId id = Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_32005,
+							getClause(relation), testNumber++);
+					ErrorDetails error = Profiles.errorFromValues(data.errorMessage, Collections.emptyList());
+					res.add(Profiles.ruleFromValues(id, data.object, null, StructureTag.getTags(relation), data.description,
+							data.test, error, annex_l_reference));
+				}
 			}
 		}
 		return res;
@@ -252,16 +260,24 @@ public class StructureRuleCreator {
 		       && (TaggedPDFHelper.getPdf17StandardRoleTypes().contains(child) || child.equals(HN) || child.equals(CONTENT_ITEM));
 	}
 
-	private RuleData getRuleData(ParsedRelationStructure rel) {
+	private List<RuleData> getRuleDatas(ParsedRelationStructure rel) {
 		switch (rel.getRelation()) {
 			case FORBIDDEN:
-				return constructForbidden(rel);
+				return Collections.singletonList(constructForbidden(rel));
 			case AT_LEAST_ONE:
-				return constructAtLeastOne(rel);
-			case ZERO_OR_ONE:
-				return constructZeroOrOne(rel);
-			case ONE:
-				return constructOne(rel);
+				return Collections.singletonList(constructAtLeastOne(rel));
+			case ZERO_OR_ONE: {
+				RuleData data = constructZeroOrOne(rel);
+				return data != null ? Collections.singletonList(data) : null;
+			}
+			case ZERO_OR_ONE_IF_PARENT_IS_GROUPING:
+				return constructZeroOrOneIfParentIsGrouping(rel);
+			case ANY_AMOUNT_IF_PARENT_IS_GROUPING:
+				return Collections.singletonList(constructForbiddenIfParentIsNotGrouping(rel));
+			case ONE: {
+				RuleData data = constructOne(rel);
+				return data != null ? Collections.singletonList(data) : null;
+			}
 			case FORBIDDEN_FOR_NON_GROUPING_CHILD:
 			case DEPENDS_ON_STRUCTURE:
 			case RUBY:
@@ -290,6 +306,46 @@ public class StructureRuleCreator {
 		return new RuleData(testObj, childTest,
 				getDescriptionOrErrorMessage(ZERO_OR_ONE_DESCRIPTION_FORMAT, parent, child),
 				getDescriptionOrErrorMessage(ZERO_OR_ONE_ERROR_FORMAT, parent, child));
+	}
+
+	private List<RuleData> constructZeroOrOneIfParentIsGrouping(ParsedRelationStructure rel) {
+		String child = rel.getChild();
+		if (child.equals(CONTENT_ITEM)) {
+			return null;
+		}
+		
+		String parent = rel.getParent();
+		String testObj = getTestObject(parent);
+		
+		List<RuleData> result = new ArrayList<>();
+		String childTest = "isGrouping == false || " + constructChildElemAmountPart(child) + " <= 1";
+		result.add(new RuleData(testObj, childTest,
+				getDescriptionOrErrorMessage(ZERO_OR_ONE_IF_PARENT_IS_GROUPING_DESCRIPTION_FORMAT, parent, child),
+				getDescriptionOrErrorMessage(ZERO_OR_ONE_IF_PARENT_IS_GROUPING_ERROR_FORMAT, parent, child)));
+		childTest = "isGrouping == true || " + constructChildElemAmountPart(child) + " == 0";
+		result.add(new RuleData(testObj, childTest,
+				getDescriptionOrErrorMessage(FORBIDDEN_IF_PARENT_IS_NOT_GROUPING_DESCRIPTION_FORMAT, parent, child),
+				getDescriptionOrErrorMessage(FORBIDDEN_IF_PARENT_IS_NOT_GROUPING_ERROR_FORMAT, parent, child)));
+		return result;
+	}
+
+	private RuleData constructForbiddenIfParentIsNotGrouping(ParsedRelationStructure rel) {
+		String parent = rel.getParent();
+		String child = rel.getChild();
+
+		String childTest;
+		String testObj = getTestObject(parent);
+		switch (child) {
+			case CONTENT_ITEM:
+				childTest = "isGrouping == true || hasContentItems == false";
+				break;
+			default:
+				childTest = "isGrouping == true || " + constructChildElemAmountPart(child) + " == 0";
+		}
+
+		return new RuleData(testObj, childTest,
+				getDescriptionOrErrorMessage(FORBIDDEN_IF_PARENT_IS_NOT_GROUPING_DESCRIPTION_FORMAT, parent, child),
+				getDescriptionOrErrorMessage(FORBIDDEN_IF_PARENT_IS_NOT_GROUPING_ERROR_FORMAT, parent, child));
 	}
 
 	private RuleData constructOne(ParsedRelationStructure rel) {
