@@ -23,14 +23,15 @@ public class ProfileMerger {
     private static final String PDFUA_FOLDER = "PDF_UA/";
     
     private static final String WCAG_MACHINE_PROFILE_NAME = "WCAG-2-2-Machine.xml";
+    private static final String WCAG_MACHINE_PDF20_PROFILE_NAME = "WCAG-2-2-Machine-PDF20.xml";
     private static final String PATH = "veraPDF-validation-profiles-" + branchName + "/";
-    private static final Set<String> excludedPDFUA1Tags = new HashSet<>();
+    private static final Set<String> excludedPDFUATags = new HashSet<>();
     static {
-        excludedPDFUA1Tags.add("major");
-        excludedPDFUA1Tags.add("minor");
-        excludedPDFUA1Tags.add("critical");
-        excludedPDFUA1Tags.add("cosmetic");
-        excludedPDFUA1Tags.add("machine");
+        excludedPDFUATags.add("major");
+        excludedPDFUATags.add("minor");
+        excludedPDFUATags.add("critical");
+        excludedPDFUATags.add("cosmetic");
+        excludedPDFUATags.add("machine");
     }
 
     public static void main(String[] args) throws IOException {
@@ -95,8 +96,16 @@ public class ProfileMerger {
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.18.5", 2));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.21.4.2", 1));
         excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_1, "7.21.4.2", 2));
-        generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
-        generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA", "1"}, new String[]{}, excludedWCAGRules);
+        generateProfile(zipSource, "WCAG-2-2-Complete.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA/1", "1"}, new String[]{}, excludedWCAGRules);
+        generateProfile(zipSource, WCAG_MACHINE_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA/1", "1"}, new String[]{}, excludedWCAGRules);
+        excludedWCAGRules = new ArrayList<>(5);
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 1));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 2));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 3));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 4));
+        excludedWCAGRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 5));
+        generateProfile(zipSource, "WCAG-2-2-Complete-PDF20.xml", PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA/2", "2"}, new String[]{}, excludedWCAGRules);
+        generateProfile(zipSource, WCAG_MACHINE_PDF20_PROFILE_NAME, PDFUA_FOLDER, new String[]{"WCAG/2.2", "WCAG/PDF_UA/2", "2"}, new String[]{}, excludedWCAGRules);
         List<RuleId> excludedWTPDFRules = new ArrayList<>(excludedTaggedRules);
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 1));
         excludedWTPDFRules.add(Profiles.ruleIdFromValues(PDFAFlavour.Specification.ISO_14289_2, "5", 2));
@@ -183,10 +192,13 @@ public class ProfileMerger {
                 if (generalProfileName.contains("WTPDF")) {
                     rule = updatePDFUA2RuleToWTPDF(rule);
                 }
-                if (generalProfileName.contains("PDFUA-1")) {
-                    rule = updatePDFUA1RuleTags(rule);
+                if (generalProfileName.contains("PDFUA-1") || generalProfileName.contains("PDFUA-2") || 
+                        generalProfileName.contains("WTPDF")) {
+                    rule = updatePDFUARuleTags(rule);
                 }
-                if (generalProfileName.contains(WCAG_MACHINE_PROFILE_NAME) && !rule.getTagsSet().contains("machine")) {
+                if ((generalProfileName.contains(WCAG_MACHINE_PROFILE_NAME) || 
+                        generalProfileName.contains(WCAG_MACHINE_PDF20_PROFILE_NAME)) && 
+                        !rule.getTagsSet().contains("machine")) {
                     continue;
                 }
                 rules.add(rule);
@@ -235,8 +247,8 @@ public class ProfileMerger {
                 rule.getTest(), rule.getError(), references);
     }
 
-    private static Rule updatePDFUA1RuleTags(Rule rule) {
-        String tags = Arrays.stream(rule.getTags().split(",")).filter(tag -> !excludedPDFUA1Tags.contains(tag)).collect(Collectors.joining(","));
+    private static Rule updatePDFUARuleTags(Rule rule) {
+        String tags = Arrays.stream(rule.getTags().split(",")).filter(tag -> !excludedPDFUATags.contains(tag)).collect(Collectors.joining(","));
         return Profiles.ruleFromValues(rule.getRuleId(), rule.getObject(), rule.getDeferred(), tags, rule.getDescription(),
                 rule.getTest(), rule.getError(), rule.getReferences());
     }
