@@ -15,8 +15,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.verapdf.apps</groupId>
-            <artifactId>greenfield-apps</artifactId>
+            <groupId>org.verapdf</groupId>
+            <artifactId>validation-model</artifactId>
             <version>${verapdf.version}</version>
         </dependency>
     </dependencies>
